@@ -4,7 +4,7 @@
 #
 # Tweak the values to match your game requirements.
 class_name CFConst
-extends Reference
+extends RefCounted
 
 # The possible return codes a function can return
 #
@@ -50,7 +50,7 @@ const DESIGN_RESOLUTION := Vector2(1280,720)
 # Switch this off to disable fancy movement of cards during draw/discard
 const FANCY_MOVEMENT := true
 # The focus style selected for this game. See enum `FocusStyle`
-const FOCUS_STYLE = CFInt.FocusStyle.BOTH
+static var FOCUS_STYLE := CFInt.FocusStyle.BOTH
 # Controls how the card will be magnified in the focus viewport.
 # Set to either "resize" or "scale"
 #

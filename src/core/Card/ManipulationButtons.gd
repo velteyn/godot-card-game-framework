@@ -1,7 +1,7 @@
 class_name ManipulationButtons
 extends VBoxContainer
 
-export(PackedScene) var manipulation_button : PackedScene
+@export var manipulation_button: PackedScene
 
 # This variable hold definitions for which buttons to create on this card.
 #
@@ -11,9 +11,9 @@ var needed_buttons: Dictionary
 # We use this variable to check if buttons are active for performance reasons
 var _are_active := true
 
-onready var _tween = $Tween
+var _tween: Tween
 # Hold the node which owns this node.
-onready var owner_node = get_parent().get_parent()
+@onready var owner_node = get_parent().get_parent()
 
 
 func _ready() -> void:
@@ -23,13 +23,13 @@ func _ready() -> void:
 # Adds an amount of manipulation buttons to the card
 func spawn_manipulation_buttons() -> void:
 	for button_name in needed_buttons:
-		var button = manipulation_button.instance()
+		var button = manipulation_button.instantiate()
 		button.name = button_name
 		button.text = needed_buttons[button_name]
 		add_child(button)
 		# We also connect each button to the ourselves
 		# The method should exist in any script that extends this class
-		button.connect("pressed",self,"_on_" + button.name + "_pressed")
+		button.connect("pressed", Callable(self, "_on_" + button.name + "_pressed"))
 
 
 # Detects when the mouse is still hovering over the buttons area.
@@ -89,10 +89,10 @@ func set_button_visible(button_name: String, value: bool) -> void:
 
 # Allows the buttons to appear gracefully
 func set_alpha(value := 1) -> void:
-	if value != modulate.a and not _tween.is_active():
-		_tween.remove_all()
-		_tween.interpolate_property(
-				self,'modulate:a',
-				modulate.a, value, 0.25,
-				Tween.TRANS_SINE, Tween.EASE_IN)
-		_tween.start()
+	if value != modulate.a:
+		if _tween and _tween.is_valid():
+			_tween.kill()
+		_tween = create_tween()
+		_tween.tween_property(
+				self, 'modulate:a',
+				value, 0.25).from(modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
