@@ -42,6 +42,7 @@ var _tween: Tween
 var pre_sorted_order: Array
 
 func _ready():
+	super()
 	add_to_group("piles")
 	# warning-ignore:return_value_discarded
 	view_button.connect("pressed", Callable(self, '_on_View_Button_pressed'))
@@ -53,14 +54,10 @@ func _ready():
 	$ViewPopup.connect("about_to_popup", Callable(self, '_on_ViewPopup_about_to_show'))
 	set_pile_name(pile_name)
 	# warning-ignore:return_value_discarded
-	connect(
-		"shuffle_completed",
-		cfc.signal_propagator,
-		"_on_signal_received",
-		[
-			"shuffle_completed",
-			{"source": name}
-		])
+	shuffle_completed.connect(
+		cfc.signal_propagator._on_signal_received.bind(
+			"shuffle_completed", {"source": name}
+		))
 
 
 func _process(_delta) -> void:
@@ -71,7 +68,7 @@ func _process(_delta) -> void:
 		if not obj.get_child_count():
 			obj.queue_free()
 	# We make sure to adjust our popup if cards were removed from it while it's open
-	$ViewPopup.set_as_minsize()
+	$ViewPopup.reset_size()
 	if _has_cards and cfc.game_settings.focus_style:
 		var top_card = get_top_card()
 		if cfc.NMAP.board.mouse_pointer in get_overlapping_areas()\
@@ -102,7 +99,7 @@ func _on_ViewPopup_about_to_show() -> void:
 
 
 # Puts all [Card] objects to the root node once the popup view window closes
-func _on_ViewPopup_popup_hide() -> void:
+func _on_ViewPopup_popup_hide():
 	var popup_tween = create_tween()
 	popup_tween.tween_property($ViewPopup, 'transparency',
 			1.0, 0.5).from(0.0).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
@@ -113,7 +110,7 @@ func _on_ViewPopup_popup_hide() -> void:
 #		print_debug(card.canonical_name, card.get_parent().name)
 		if "CardPopUpSlot" in card.get_parent().name:
 			card.get_parent().remove_child(card)
-			add_child(card)
+			_pile_add_card(card)
 			# We need to remember that cards in piles should be left invisible
 			# and at default scale
 			card.scale = Vector2(1,1)
@@ -138,16 +135,16 @@ func populate_popup(sorted:= sorted_popup) -> void:
 	manipulation_buttons.visible = false
 	# We set the size of the grid to hold slightly scaled-down cards
 	var card_array := get_all_cards(false)
-	card_array.invert()
+	card_array.reverse()
 	pre_sorted_order = get_all_cards()
 	if sorted:
 		card_array.sort_custom(Callable(CFUtils, "sort_scriptables_by_name"))
 	for card in card_array:
 		# We remove the card to rehost it in the popup grid container
-		remove_child(card)
+		_pile_remove_card(card)
 		_slot_card_into_popup(card)
 	# Finally we Pop the Up :)
-	$ViewPopup.popup_centered()
+	$ViewPopup.popup()
 	is_popup_open = true
 	card_count_label.text = str(get_card_count())
 
@@ -168,13 +165,13 @@ func set_pile_name(value: String) -> void:
 		pile_name_label.text = value
 
 
-# Overrides the built-in add_child() method,
-# To make sure the control node is set to be the last one among siblings.
+# Overrides the built-in add_card() method,
+# to make sure the control node is set to be the last one among siblings.
 # This way the control node intercepts any inputs.
 #
 # Also checks if the popup window is currently open, and puts the card
 # directly there in that case.
-func add_child(node, _legible_unique_name=false) -> void:
+func _pile_add_card(node, _legible_unique_name=false) -> void:
 	if not $ViewPopup.visible:
 		super.add_child(node)
 		if node as Card:
@@ -190,7 +187,7 @@ func add_child(node, _legible_unique_name=false) -> void:
 					_opacity_tween.kill()
 				_opacity_tween = create_tween()
 				_opacity_tween.tween_property($Control, 'self_modulate:a',
-						$Control.self_modulate.a, 0.0, 1.0).from($Control.self_modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+						$Control.self_modulate.a, 0.0).from($Control.self_modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 			card_count_label.text = str(get_card_count())
 	elif node as Card: # This triggers if the ViewPopup node is active
 		# When the player adds card while the viewpopup is active
@@ -201,20 +198,20 @@ func add_child(node, _legible_unique_name=false) -> void:
 # Overrides the function which removed chilren nodes so that it detects
 # when a Card class is removed. In that case it also shows
 # this container's "floor" if it was the last card in the pile.
-func remove_child(node, _legible_unique_name=false) -> void:
+func _pile_remove_card(node) -> void:
 	super.remove_child(node)
 	card_count_label.text = str(get_card_count())
 	# When we put the first card in the pile, we make sure the
 	# Panel is made transparent so that the card backs are seen instead
-		if get_card_count() == 0:
-			_has_cards = false
-			reorganize_stack()
-			if not (_opacity_tween and _opacity_tween.is_running()):
-				if _opacity_tween and _opacity_tween.is_valid():
-					_opacity_tween.kill()
-				_opacity_tween = create_tween()
-				_opacity_tween.tween_property($Control, 'self_modulate:a',
-						0.4, 0.5).from($Control.self_modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	if get_card_count() == 0:
+		_has_cards = false
+		reorganize_stack()
+		if not (_opacity_tween and _opacity_tween.is_running()):
+			if _opacity_tween and _opacity_tween.is_valid():
+				_opacity_tween.kill()
+			_opacity_tween = create_tween()
+			_opacity_tween.tween_property($Control, 'self_modulate:a',
+					0.4, 0.5).from($Control.self_modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	else:
 		$Control.self_modulate.a = 0.0
 
@@ -253,16 +250,15 @@ func reorganize_stack() -> void:
 	$CollisionShape2D.position = $Control.position + $Control.size /2
 
 
-# Override the godot builtin move_child() method,
-# to make sure the $Control node is always drawn on top of Card nodes
-func move_child(child_node, to_position) -> void:
+# Override to make sure the $Control node is always drawn on top of Card nodes
+func _pile_move_child(child_node, to_position) -> void:
 	super.move_child(child_node, to_position)
 	$Control.raise()
 
 # The top position of a pile, is always the lowest
 func move_card_to_top(card: Card) -> void:
 	var lowest_index = get_children().size() - 1
-	move_child(card, lowest_index)
+	_pile_move_child(card, lowest_index)
 	reorganize_stack()
 
 # Overrides [CardContainer] function to include cards in the popup window
@@ -271,7 +267,7 @@ func get_all_cards(_scanViewPopup := true) -> Array:
 	if is_popup_open:
 		return(pre_sorted_order)
 	else:
-		return(.get_all_cards())
+		return super.get_all_cards()
 
 
 # A wrapper for the CardContainer's get_last_card()
@@ -326,7 +322,7 @@ func _slot_card_into_popup(card: Card) -> void:
 
 # Randomly rearranges the order of the [Card] nodes.
 # Pile shuffling includes a fancy animation
-func shuffle_cards(animate = true) -> void:
+func shuffle_cards(animate = true):
 	# Optimally the CFConst.ShuffleStyle enum should be defined in this class
 	# but if we did so, we would not be able to refer to it from the Card
 	# class, as that would cause a cyclic dependency on the parser
@@ -339,8 +335,7 @@ func shuffle_cards(animate = true) -> void:
 		var init_position = position
 		# The following calculation figures out the direction
 		# towards the center of the viewport from the center of the card
-		var shuffle_direction = (global_position + $Control.size/2)\
-				super.direction_to(get_viewport().size / 2)
+		var shuffle_direction = (global_position + $Control.size / 2).direction_to(get_viewport().size / 2)
 		# We increase the intensity of the y direction, to make the shuffle
 		# position move higher up or down respective to its position.
 		shuffle_direction.y *= 2

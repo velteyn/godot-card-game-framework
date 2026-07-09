@@ -26,7 +26,7 @@ var mouse_pointer: MousePointer
 	
 
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
+func _ready():
 	add_to_group("board")
 	if not cfc.are_all_nodes_mapped:
 		await cfc.all_nodes_mapped
@@ -39,6 +39,8 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	if not mouse_pointer:
+		return
 	mouse_pointer.global_position = \
 			mouse_pointer.determine_global_mouse_pos()
 

@@ -32,13 +32,14 @@ func _ready() -> void:
 # without issues
 func _on_FancyMovementToggle_toggled(_button_pressed) -> void:
 #	cfc.game_settings.fancy_movement = $FancyMovementToggle.pressed
-	cfc.set_setting('fancy_movement', $FancyMovementToggle.pressed)
+	cfc.set_setting('fancy_movement', $FancyMovementToggle.button_pressed)
 
 
 func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
-	cfc.set_setting("hand_use_oval_shape", $OvalHandToggle.pressed)
-	for c in cfc.NMAP.hand.get_all_cards():
-		c.reorganize_self()
+	cfc.set_setting("hand_use_oval_shape", $OvalHandToggle.button_pressed)
+	if cfc.NMAP.has("hand"):
+		for c in cfc.NMAP.hand.get_all_cards():
+			c.reorganize_self()
 
 
 # Reshuffles all Card objects created back into the deck

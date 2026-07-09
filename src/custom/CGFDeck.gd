@@ -3,7 +3,8 @@ extends Pile
 
 signal draw_card(deck)
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
+func _ready():
+	super()
 	if not cfc.are_all_nodes_mapped:
 		await cfc.all_nodes_mapped
 	# warning-ignore:return_value_discarded

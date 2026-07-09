@@ -39,6 +39,7 @@ var _excess_discard_pile : Pile = null
 @onready var _counter_cards = $Counters/Cards
 
 func _ready() -> void:
+	super()
 	add_to_group("hands")
 
 func prepare_excess_discard_pile() -> void:
@@ -130,7 +131,7 @@ func get_final_placement_node(card: Card) -> Node:
 # Overrides the re_place() function of [CardContainer] in order
 # to also resize the hand rect, according to how many other
 # CardContainers exist in the same row/column
-func re_place() -> void:
+func re_place():
 	# This variable records how the start position of the hand
 	# should be modified, depending on how many other containers
 	# are on its left

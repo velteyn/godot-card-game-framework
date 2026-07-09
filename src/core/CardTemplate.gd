@@ -129,11 +129,14 @@ signal scripts_executed(card, sceng, trigger)
 # while it's face-down
 @export var is_viewed  := false: get = get_is_viewed, set = set_is_viewed
 # Specifies the card rotation in increments of 90 degrees
-@export_range(0, 270, 90) var card_rotation := 0:
+var _is_faceup := true
+var _card_rotation := 0
+
+@export_range(0, 270, 90) var card_rotation:
 	set(value):
 		set_card_rotation(value)
 	get:
-		return get_card_rotation()
+		return _card_rotation
 # Specifies where on the board the card may be placed
 @export var board_placement: BoardPlacement = BoardPlacement.ANYWHERE
 @export var mandatory_grid_name : String
@@ -205,17 +208,29 @@ signal scripts_executed(card, sceng, trigger)
 # If not set, will be set to the value of the Name label in the front.
 # if that is also not set, will be set.
 # to the human-readable value of the "name" node property.
+var _card_name := ""
+
 var canonical_name : String:
 	get:
-		return get_card_name()
+		return _card_name
 	set(value):
 		set_card_name(value)
+var _card_size := canonical_size
+
 # Ensures all nodes fit inside this rect.
-var card_size := canonical_size:
+var card_size:
 	set(value):
 		set_card_size(value)
+	get:
+		return _card_size
+var _state := CardState.PREVIEW
+
 # Starting state for each card
-var state : int = CardState.PREVIEW: set = set_state
+var state : int:
+	set(value):
+		set_state(value)
+	get:
+		return _state
 var state_finalized := false
 # If this card is hosting other cards,
 # this list retains links to their objects in order.
@@ -224,7 +239,7 @@ var attachments := []
 # this tracks who its host is.
 var current_host_card : Card = null
 # If true, the card will be displayed faceup. If false, it will be facedown
-var is_faceup := true:
+var is_faceup:
 	get:
 		return get_is_faceup()
 	set(value):
@@ -452,7 +467,7 @@ func _input(event) -> void:
 
 
 # A signal for whenever the player clicks on a card
-func _on_Card_gui_input(event) -> void:
+func _on_Card_gui_input(event):
 	if event is InputEventMouseButton and cfc.NMAP.has("board"):
 		# because of https://github.com/godotengine/godot/issues/44138
 		# we need to double check that the card which is receiving the
@@ -846,7 +861,7 @@ func resize_recursively(control_node: Node, requested_scale: float) -> void:
 
 # Sets the card size and adjusts all nodes depending on it.
 func set_card_size(value: Vector2, ignore_area = false) -> void:
-	card_size = value
+	_card_size = value
 	_control.custom_minimum_size = value
 	# We set the card to always pivot from its center.
 	_control.pivot_offset = value/2
@@ -878,7 +893,7 @@ func set_is_faceup(
 			check := false,
 			tags := ["Manual"]) -> int:
 	var retcode: int
-	if value == is_faceup:
+	if value == _is_faceup:
 		retcode = CFConst.ReturnCode.OK
 	# We check if the parent is a valid instance
 	# If it is not, this is a viewport dupe card that has not finished
@@ -886,7 +901,7 @@ func set_is_faceup(
 	elif not check and is_instance_valid(get_parent()):
 		tokens.is_drawer_open = false
 		# We make sure to remove other tweens of the same type to avoid a deadlock
-		is_faceup = value
+		_is_faceup = value
 		# When we change faceup state, we reset the is_viewed to false
 		if set_is_viewed(false) == CFConst.ReturnCode.FAILED:
 			printerr("ERROR: Something went unexpectedly in set_is_faceup")
@@ -931,7 +946,7 @@ func set_is_faceup(
 
 # Getter for is_faceup
 func get_is_faceup() -> bool:
-	return is_faceup
+	return _is_faceup
 
 
 # Setter for is_faceup
@@ -987,7 +1002,7 @@ func set_card_name(value : String, set_label := true) -> void:
 	# if the card_front.card_labels variable is not set it means ready() has not
 	# run yet, so we just store the card name for later.
 	if not card_front:
-		canonical_name = value
+		_card_name = value
 	else:
 		# We set all areas of the card to match the canonical name.
 		var name_label = card_front.card_labels["Name"]
@@ -996,21 +1011,21 @@ func set_card_name(value : String, set_label := true) -> void:
 		elif set_label:
 			card_front.set_label_text(name_label,value)
 		name = value
-		canonical_name = value
+		_card_name = value
 		properties["Name"] = value
 
 
 # Getter for canonical_name
 func get_card_name() -> String:
-	return canonical_name
+	return _card_name
 
 
 # Sets the card state and sends a signal.
 func set_state(value: int) -> void:
-	if state == CardState.DRAGGED:
+	if _state == CardState.DRAGGED:
 		pass
-	var prev_state = state
-	state = value
+	var prev_state = _state
+	_state = value
 	state_finalized = false
 	emit_signal("state_changed", self, prev_state, state)
 
@@ -1042,7 +1057,7 @@ func set_card_rotation(
 		retcode = CFConst.ReturnCode.FAILED
 	# If the card is already in the specified rotation
 	# and a toggle was not requested, we consider we did nothing
-	elif value == card_rotation and not toggle:
+	elif value == _card_rotation and not toggle:
 		retcode = CFConst.ReturnCode.OK
 		# We add this check because hand oval rotation
 		# does not change the card_rotation property
@@ -1057,12 +1072,12 @@ func set_card_rotation(
 	else:
 		# If the toggle was specified then if the card matches the requested
 		# rotation, we reset it to 0 degrees
-		if card_rotation == value and toggle:
+		if _card_rotation == value and toggle:
 			value = 0
 
 		# We modify the card only if this is not a cost dry-run
 		if not check:
-			card_rotation = value
+			_card_rotation = value
 			# If the value is 0 but the card is in an oval hand, we ensure the actual
 			# rotation we apply to the card will be their hand oval rotation
 			if value == 0 \
@@ -1752,7 +1767,7 @@ func recalculate_position(index_diff = null) -> Vector2:
 
 # Animates a card semi-randomly to make it looks like it's being shuffled
 # Then it returns it to its original location
-func animate_shuffle(anim_speed : float, style : int) -> void:
+func animate_shuffle(anim_speed : float, style : int):
 	var starting_card_position = position
 	var csize : Vector2
 	var random_x : float
@@ -2064,7 +2079,7 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 
 # Clears all attachment/hosting status.
 # It is typically called when a card is removed from the table
-func _clear_attachment_status(tags := ["Manual"]) -> void:
+func _clear_attachment_status(tags := ["Manual"]):
 	if current_host_card:
 		emit_signal("card_unattached",
 				self,
@@ -2099,7 +2114,7 @@ func _is_card_hovered() -> bool:
 # so that the correct Panel (Card Back or Card Front) and children is visible
 #
 # It also pretends to flip the highlight, otherwise it looks fake.
-func _flip_card(to_invisible: Control, to_visible: Control, instant := false) -> void:
+func _flip_card(to_invisible: Control, to_visible: Control, instant := false):
 	if instant:
 		to_visible.visible = true
 		to_visible.scale.x = 1
@@ -2197,7 +2212,7 @@ func _add_tween_scale(
 #
 # Makes sure that when a card is in a specific state while
 # its position, highlights, scaling and so on, stay as expected
-func _process_card_state() -> void:
+func _process_card_state():
 	match state:
 		CardState.IN_HAND:
 			if state_finalized:
@@ -2499,7 +2514,7 @@ func _process_card_state() -> void:
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
 			if get_parent() in get_tree().get_nodes_in_group("piles"):
-				if card_front.resizing_labels.size() and not get_parent().faceup_cards:
+				if is_instance_valid(card_front) and card_front.resizing_labels.size() and not get_parent().faceup_cards:
 					return
 				set_is_faceup(get_parent().faceup_cards, true)
 				ensure_proper()

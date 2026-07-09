@@ -135,7 +135,7 @@ func populate_available_cards() -> void:
 # Slowly loads all cards in to the grid
 # We use a delay function between each card, to avoid freezing the game
 # while instancing all the nodes
-func prepare_card_grid(is_staggered:= false) -> void:
+func prepare_card_grid(is_staggered:= false):
 	for card_object in _available_cards.get_children():
 		card_object.setup_grid_card_object()
 		# This prevents the game from hanging while populating the grid
@@ -165,7 +165,7 @@ func _apply_filters(active_filters: Array) -> void:
 			var active_button_values = []
 			for button in _filter_buttons.get_children():
 				if button as CVFilterButton\
-						and button.pressed\
+						and button.button_pressed\
 						and button.property == property:
 					active_button_values.append(button.value)
 			if not card_object.card_properties.get(property):
@@ -206,7 +206,7 @@ func _on_filter_button_pressed() -> void:
 func _on_filter_button_right_pressed(filter_button: CVFilterButton) -> void:
 	for button in _filter_buttons.get_children():
 		if button as CVFilterButton\
-				and button.pressed\
+				and button.button_pressed\
 				and button != filter_button:
 			button.button_pressed = false
 	_apply_filters(_filter_line.get_active_filters())

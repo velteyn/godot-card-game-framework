@@ -148,8 +148,9 @@ func _setup() -> void:
 		print_debug("DEBUG INFO:CFControl: card definitions load time = %sms" % [str(defs_load_end_time - load_start_time)])	
 	# Removed threading since I optimized this loading function
 #	load_script_definitions()
-	# We're loading the script definitions in a thread to avoid delaying game load too much
-	if OS.get_name() == "HTML5":
+	# We're loading the script definitions in a thread to avoid delaying game load too much,
+	# but NOT during testing (thread + signal emit is not allowed in Godot 4).
+	if is_testing or OS.get_name() == "HTML5":
 		load_script_definitions()
 	else:
 		script_load_thread = Thread.new()
@@ -283,7 +284,7 @@ func load_script_definitions() -> void:
 				combined_scripts[card_name] = card_script
 				set_scripts[card_name] = card_script
 				unmodified_set_scripts[card_name] = unmodified_card_script
-	emit_signal("scripts_loaded")
+	call_deferred("emit_signal", "scripts_loaded")
 	scripts_loading = false
 
 
@@ -357,7 +358,7 @@ func init_font_cache() -> void:
 # This function resets the game to the same state as when
 # the board loads for the first time. Only works when you're running
 # off of the Main scene.
-func reset_game() -> void:
+func reset_game():
 	var main = cfc.NMAP.main
 	clear()
 	await get_tree().create_timer(0.1).timeout
@@ -366,7 +367,7 @@ func reset_game() -> void:
 
 # This function clears out the usual game nodes
 # and prepares to either quit the game or reset.
-func clear() -> void:
+func clear():
 	flush_cache()
 	are_all_nodes_mapped = false
 	card_drag_ongoing = null
