@@ -136,13 +136,13 @@
 
 | Test File | Status | Notes |
 |-----------|--------|-------|
-| `test_card_class.gd` | ✅ 10/10 passing | 3 bugs fixed this session |
+| `test_card_class.gd` | ✅ 10/10 passing | 3 bugs fixed |
+| `test_cardcontainer_class.gd` | ✅ 5/5 passing | Fixed get_class, child indices, tween signal |
+| `test_pile_class.gd` | ✅ 6/6 passing | Fixed indices, popup return, shuffle signal, anchor warning |
 | `test_AskInteger_scene.gd` | ✅ 3/3 passing | |
 | `test_OptionalConfirmation_scene.gd` | ✅ 5/5 passing | |
 | `test_DeckBuilder.gd` | ✅ 2/2 passing | |
 | `test_token_class.gd` | ✅ 6/6 passing | |
-| `test_cardcontainer_class.gd` | ❌ 2/5 passing | Auto-renaming issues (pre-existing) |
-| `test_pile_class.gd` | ❌ 3/6 passing | Auto-renaming + popup ordering (pre-existing) |
 | Integration tests | ❌ Mostly failing | Pre-existing Tween/signal migration issues |
 
 ## Key Godot 4 Pitfalls Discovered
@@ -182,6 +182,24 @@ GUT v9.7.0 creates a root node named `GutRunner` (not `Gut`). The original guard
 
 ### `wait_seconds` vs `process_frame` timing
 `SceneTreeTimer` (from `create_timer()`) fires BEFORE `process_frame` in the same frame cycle. Code that uses `await wait_seconds(0)` to "settle" the frame may observe incomplete UI state. A `process_frame` await is needed for `RichTextLabel` and other deferred operations.
+
+### `get_class()` returns engine class, not script class_name
+In Godot 4, `Object.get_class()` only returns the engine-level class name (e.g., `"Area2D"`), never a script-defined `class_name`. Use `is` keyword for type checks or a custom method.
+
+### `Window.transparency` no-op on embedded windows
+In Godot 4, `Window.transparency` has no effect on embedded windows (popups/dialogs). `tween_property($ViewPopup, 'transparency', ...)` returns null, crashing subsequent `.from()` calls. Fix: animate `modulate:a` on the popup's content child instead.
+
+### `Control.new().set_name()` overridden by `add_child`
+In Godot 4, `Control.new().set_name("Foo")` followed by `add_child()` results in internal names like `@Control@212`. Set `name = "Foo"` AFTER `add_child()`.
+
+### Signal `bind()` type coercion with typed functions
+`bind()` appends bound arguments after signal-emitted arguments. If the target function has typed parameters and the combined args don't match types, a "Cannot convert argument N" error occurs. Fix: use a lambda wrapper.
+
+### Control `layout_mode` anchor conflicts
+Controls default to `layout_mode = 1` (anchors mode). Direct `position`/`size` assignments trigger engine warnings. Set `layout_mode = 0` for Controls under non-Control parents (e.g., Area2D).
+
+### Godot 3 Tween nodes → orphaned scene overrides
+Inherited scenes that overrode removed Tween nodes produce "node was modified from inside an instance, but it has vanished" warnings. Remove orphaned `[node name="Tween"]` entries.
 
 ## Risks & Considerations
 

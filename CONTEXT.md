@@ -190,10 +190,9 @@ themes/                 ← Dark theme
 
 ### Phase 6 (Verification) — 🔶 In Progress
 - Project loads in headless mode without compilation errors
-- All 6 unit test files pass: `test_card_class.gd` (10/10), `test_AskInteger_scene.gd` (3/3), `test_OptionalConfirmation_scene.gd` (5/5), `test_DeckBuilder.gd` (2/2), `test_token_class.gd` (6/6)
-- Remaining pre-existing failures: `test_cardcontainer_class.gd` (2/5, 3 failing — auto-renaming), `test_pile_class.gd` (3/6, 3 failing — auto-renaming + popup ordering)
-- Integration tests (`test_piles.gd`) still failing (pre-existing migration issues: Tween nulls, signal conversion errors)
-- Key fixes in this session: `move_to` board-drop code containment, `CGFBoard.gd` GUT detection, `test_init_card_name` canonical_name check
+- All 8 unit test files pass: `test_card_class.gd` (10/10), `test_cardcontainer_class.gd` (5/5), `test_pile_class.gd` (6/6), `test_AskInteger_scene.gd` (3/3), `test_OptionalConfirmation_scene.gd` (5/5), `test_DeckBuilder.gd` (2/2), `test_token_class.gd` (6/6)
+- Integration tests still failing (pre-existing migration issues: Tween nulls, signal conversion errors)
+- Key fixes: `move_to` board-drop containment, `CGFBoard.gd` GUT detection, canonical_name check, child index adjustments, popup card return, tween signal name, shuffle signal lambda, anchor warning fix
 
 ### Key Bugs Discovered During Migration
 
@@ -209,6 +208,18 @@ themes/                 ← Dark theme
 10. **`CGFBoard.gd` GUT detection**: The guard `has_node('Gut')` never matched because GUT v9.7.0's root node is `GutRunner`. Changed to `cfc.is_testing`.
 11. **`RichTextLabel.append_text()` doesn't set `.text`**: In Godot 4, `append_text()` does NOT update the `text` property (unlike Godot 3's `append_bbcode()`). Fixed in `CardFront.gd:_assign_bbcode_text`.
 12. **`wait_seconds` fires before `process_frame`**: `SceneTreeTimer` resolves before `process_frame` in the same frame cycle, affecting test timing assumptions.
+
+13. **`get_class()` returns engine class, not script class_name**: In Godot 4, `Node.get_class()` returns only the engine-level class name (e.g., `"Area2D"`), never script-defined `class_name` (e.g., `"CardContainer"`). Use `is` keyword for type checks or a custom method like `get_card_container_class()`.
+
+14. **`Window.transparency` no-op on embedded popups**: In Godot 4, `Window.transparency` is documented as having no effect on embedded windows (popups/dialogs). The `tween_property($ViewPopup, 'transparency', ...)` call returns null, causing `.from()` to crash. Fix: animate `modulate:a` on the popup's content child instead.
+
+15. **`Control.new().set_name()` overridden by `add_child`**: In Godot 4, calling `set_name("Foo")` on a dynamically created `Control.new()` before adding it to the scene tree gets overridden. The node receives an internal name like `@Control@212` after `add_child()`. Fix: set the name AFTER `add_child()` via `node.name = "Foo"`.
+
+16. **Signal `bind()` type coercion with typed functions**: Godot 4's `Callable.bind()` appends bound arguments after signal arguments. When the target function has typed parameters, a type mismatch occurs if the signal argument or bound arg doesn't match the parameter type. The original `shuffle_completed.connect(cfc.signal_propagator._on_signal_received.bind("shuffle_completed", {...}))` called `_on_signal_received(self, "shuffle_completed", {...})` where `self` (Pile) couldn't be converted to `Card`. Fix: use a lambda wrapper that accepts the signal arg and passes `null` as the typed param.
+
+17. **Control `layout_mode` anchor conflicts**: In Godot 4, Controls default to `layout_mode = 1` (anchors mode). Direct `position`/`size` assignments trigger `"Nodes with non-equal opposite anchors will have their size overridden"` warnings. For Controls parented under Area2D (like the Pile's Panel), set `layout_mode = 0` before direct manipulation.
+
+18. **Godot 3 Tween nodes removed from scenes**: The Godot 3 Pile.tscn included `Tween` child nodes. During migration these were removed (Godot 4 uses `create_tween()`). Custom scenes like UTBoard.tscn had overrides referencing these removed nodes, causing `"node was modified from inside an instance, but it has vanished"` warnings. Fix: remove orphaned Tween node overrides from inherited scenes.
 
 ## Key Conversion Challenges
 

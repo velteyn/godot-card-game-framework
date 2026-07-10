@@ -116,3 +116,9 @@ This file catalogs every Godot 3.x-specific API usage pattern found in the codeb
 | `move_to()` board code runs on pile/hand | CardTemplate.gd:move_to | Board-drop code (line 1334 `move_child` to last) ran unconditionally; wrapped in `else` |
 | `has_node('Gut')` not matching | CGFBoard.gd | GUT v9.7.0 root node is `GutRunner`, not `Gut`; use `cfc.is_testing` |
 | `wait_seconds` vs `process_frame` order | Test timing | `SceneTreeTimer` fires before `process_frame` in the same frame cycle |
+| `get_class()` → engine class only | CardContainer tests | Godot 4 `get_class()` returns `"Area2D"`, not script `class_name`; use `is` or custom method |
+| `Window.transparency` on embedded windows | Pile.gd | No-op on PopupPanel/popups; returns null from `tween_property`; use `modulate:a` on child Content |
+| `Control.new().set_name()` overridden by `add_child` | Pile.gd | Internal name `@Control@NNN` overrides user-set name; set `name = "Foo"` AFTER `add_child()` |
+| Signal `bind()` + typed function params | Pile.gd | `bind()` appends args after signal args; typed first param causes type coercion error |
+| Control `layout_mode` anchor conflicts | Pile.gd | Default `layout_mode=1`; direct `position`/`size` triggers anchor warnings; set `layout_mode=0` |
+| Godot 3 Tween nodes → orphaned overrides | UTBoard.tscn | Inherited scenes with `[node name="Tween"]` overrides cause "vanished" warnings after Tween removal |

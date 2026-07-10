@@ -89,6 +89,30 @@ The original guard `if not get_tree().get_root().has_node('Gut')` in `CGFBoard.g
 ### wait_seconds timer fires before process_frame
 In Godot 4, `SceneTreeTimer` (from `create_timer()`) fires before `process_frame` in the same frame cycle. This means `await wait_seconds(0)` resolves BEFORE `await get_tree().process_frame`. Code that depends on `wait_seconds` to "settle" UI state may observe inconsistent results — a `process_frame` wait is needed for `RichTextLabel` updates and other deferred operations.
 
+### get_class() returns engine class, not script class_name
+In Godot 4, `Object.get_class()` only returns the engine-level class name (e.g., `"Area2D"`), never a script-defined `class_name`. Godot 3 had the same behavior for engine classes but scripts could override via `_get_class()`. Tests checking `container.get_class()` against `"CardContainer"` fail because the return is `"Area2D"`. Fix: use `is CardContainer` for type checks, or call a custom method like `get_card_container_class()`.
+
+### Window.transparency no-op on embedded windows
+In Godot 4, `Window.transparency` has no effect on embedded windows (popups/dialogs). When `tween_property($ViewPopup, 'transparency', ...)` runs on a PopupPanel, the property is invalid and the tween returns null. The subsequent `.from()` call crashes with `"Cannot call method 'from' on a null value"`. Fix: animate `modulate:a` on the popup's content child (`$ViewPopup/CardView`) instead of `transparency` on the Window.
+
+### Control.new().set_name() overridden by add_child
+In Godot 4, calling `Control.new().set_name("Foo")` followed by `add_child(node)` results in the node's name being an internal engine name like `@Control@212` instead of the intended `"Foo"`. The engine overrides the pre-add_child name. Fix: set `node.name = "Foo"` AFTER `add_child(node)`.
+
+Found in: `Pile.gd:_slot_card_into_popup` — CardPopUpSlot naming for popup card detection.
+
+### Signal bind() type coercion with typed functions
+In Godot 4, `signal.connect(target_fn.bind(extra_args))` appends bound arguments AFTER any signal-emitted arguments. When the target function has typed parameters, the combined argument list must match. For `shuffle_completed.connect(cfc.signal_propagator._on_signal_received.bind("shuffle_completed", {src: name}))`, the signal emits `(self)` and the bound args are `("shuffle_completed", {})`, so the call is `_on_signal_received(self, "shuffle_completed", {})`. Since `_on_signal_received` expects first param `Card`, passing a Pile/Hand Node fails type checking with "Cannot convert argument 1 from Object to Object". Fix: use a lambda wrapper `func(source): propagate._on_signal_received(null, "shuffle_completed", {})` that discards the signal arg and provides explicit args.
+
+Found in: `Pile.gd:_ready` shuffle_completed connection.
+
+### Control layout_mode conflicts with direct position/size
+In Godot 4, Controls default to `layout_mode = 1` (anchors mode). Setting `position` or `size` directly on a Control with anchors mode active triggers `"Nodes with non-equal opposite anchors will have their size overridden after _ready()"` engine warnings. For Controls parented under Area2D nodes (not using the Control layout system), set `layout_mode = 0` before performing direct position/size manipulation.
+
+Found in: `Pile.gd:reorganize_stack` — `$Control.size` and `$Control.position` assignments.
+
+### Godot 3 Tween nodes leave orphaned scene overrides
+The Godot 3 Pile.tscn included `Tween` child nodes for animation. During migration these were removed (Godot 4 uses `create_tween()`). Inherited scenes like UTBoard.tscn that overrode those specific Tween nodes now produce warnings: `"node was modified from inside an instance, but it has vanished"`. Fix: remove orphaned `[node name="Tween" ...]` entries from inheriting scenes.
+
 ## Documentation Links
 
 - Godot 3 to 4 migration: https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.html
