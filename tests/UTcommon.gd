@@ -129,10 +129,35 @@ func drop_card(card: Card, drop_location: Vector2):
 
 # Takes care of simple drag&drop requests
 func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fast"):
+	# Godot 4 headless: Area2D overlap signals don't fire, bypass mouse system
+	var target := _find_container_at(target_position)
+	if target:
+		card.move_to(target, -1, target.to_local(target_position))
+		if card._tween and card._tween.is_valid():
+			await yield_to(card._tween, "finished", 1)
+		return
 	await drag_card(card,target_position,interpolation_speed)
 	await drop_card(card,board._UT_mouse_position)
-	await yield_for(0.1) # Wait to allow dragging to start
+	await yield_for(0.1)
 	card._on_Card_mouse_exited()
+
+func _find_container_at(pos: Vector2) -> Node:
+	for container in get_tree().get_nodes_in_group("card_containers"):
+		var cs_node = container.get_node_or_null("CollisionShape2D")
+		if not cs_node:
+			continue
+		var cs = cs_node as CollisionShape2D
+		if not cs or not cs.shape:
+			continue
+		var rect = cs.shape as RectangleShape2D
+		if not rect:
+			continue
+		var gpos = container.global_position + cs.position
+		var ext = rect.size * 0.5
+		if pos.x >= gpos.x - ext.x and pos.x <= gpos.x + ext.x:
+			if pos.y >= gpos.y - ext.y and pos.y <= gpos.y + ext.y:
+				return container
+	return null
 
 # Interpolates the virtual mouse so that it correctly targets a card
 func target_card(source: Card,
