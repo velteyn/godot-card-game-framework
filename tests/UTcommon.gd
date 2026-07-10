@@ -23,7 +23,6 @@ func fake_click(pressed, position, flags=0) -> InputEvent:
 	ev.button_index=MOUSE_BUTTON_LEFT
 	ev.pressed = pressed
 	ev.position = position
-	ev.meta = flags
 	return ev
 
 
@@ -112,7 +111,8 @@ func drag_card(card: Card, target_position: Vector2, interpolation_speed := "fas
 func drop_card(card: Card, drop_location: Vector2):
 	var fc:= fake_click(false, drop_location)
 	card._on_Card_gui_input(fc)
-	await yield_to(card._tween, "tween_all_completed", 1)
+	if card._tween and card._tween.is_valid():
+		await yield_to(card._tween, "finished", 1)
 
 
 # Takes care of simple drag&drop requests
@@ -150,9 +150,10 @@ func target_card(source: Card,
 
 func table_move(card: Card, pos: Vector2):
 	card.move_to(board, -1, pos)
-	await yield_to(card._tween, "tween_all_completed", 0.5)
+	if card._tween and card._tween.is_valid():
+		await yield_to(card._tween, "finished", 0.5)
 #	if cfc.game_settings.fancy_movement:
-#		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+#		yield(yield_to(card._tween, "finished", 0.5), YIELD)
 
 func move_mouse(target_position: Vector2, interpolation_speed := "fast"):
 	var mouse_speed = MOUSE_SPEED[interpolation_speed][0]

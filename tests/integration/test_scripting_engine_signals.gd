@@ -19,7 +19,7 @@ class TestSignals:
 				"trigger": "self"}}
 		await table_move(card, Vector2(100,100))
 		card.card_rotation = 90
-		await yield_to(card._flip_tween, "tween_all_completed", 1)
+		await yield_to(card._flip_tween, "finished", 1)
 		assert_signal_emitted_with_parameters(
 					card,"card_flipped",[card,"card_flipped",{"is_faceup": false,
 					"tags": ["Scripted"]}])
@@ -33,7 +33,7 @@ class TestSignals:
 				"set_faceup": false}]}}
 		await table_move(target, Vector2(500,100))
 		target.card_rotation = 90
-		await yield_to(target._flip_tween, "tween_all_completed", 1)
+		await yield_to(target._flip_tween, "finished", 1)
 		assert_signal_emitted_with_parameters(
 					target,"card_flipped",[target,"card_flipped",
 					{"is_faceup": false,
@@ -115,7 +115,7 @@ class TestCardPropertiesFilter:
 				"Card did not start targeting since filter_properties_trigger"
 				+ "  did not match even though filter_properties_subject matched")
 		await target_card(cards[6],target2)
-		await yield_to(target._flip_tween, "tween_all_completed", 1)
+		await yield_to(target._flip_tween, "finished", 1)
 		assert_true(cards[2].is_faceup,
 				"Card stayed face-up since filter_properties_trigger didn't match")
 		assert_false(cards[3].is_faceup,
@@ -139,7 +139,7 @@ class TestCardPropertiesFilter:
 				"Card did not start targeting since filter_properties_trigger"
 				+ "  did not match even though filter_properties_subject matched")
 		await target_card(cards[7],target)
-		await yield_to(target._flip_tween, "tween_all_completed", 1)
+		await yield_to(target._flip_tween, "finished", 1)
 		assert_true(target.is_faceup,
 				"Card stayed face-up since filter_properties_subject didn't match"
 				+ " even though filter_properties_trigger matches")
@@ -178,7 +178,7 @@ class TestCardRotates:
 				"trigger": "another"}}
 		await table_move(target, Vector2(500,100))
 		target.card_rotation = 90
-		await yield_to(card._tween, "tween_all_completed", 1)
+		await yield_to(card._tween, "finished", 1)
 		assert_signal_emitted_with_parameters(
 					target,"card_rotated",
 					[target,"card_rotated",
@@ -223,7 +223,7 @@ class TestCardFlipped:
 				"trigger": "another"}}
 
 		target.is_faceup = false
-		await yield_to(target._flip_tween, "tween_all_completed", 1)
+		await yield_to(target._flip_tween, "finished", 1)
 		assert_signal_emitted_with_parameters(
 					target,"card_flipped",
 					[target,"card_flipped",
@@ -250,7 +250,7 @@ class TestCardViewed:
 
 		await table_move(target, Vector2(600,100))
 		target.is_faceup = false
-		await yield_to(target._flip_tween, "tween_all_completed", 1)
+		await yield_to(target._flip_tween, "finished", 1)
 		target.is_viewed = true
 		await yield_for(0.5)
 		assert_signal_emitted_with_parameters(
@@ -273,7 +273,7 @@ class TestCardMovedToHand:
 					"set_faceup": false}],
 				"trigger": "another"}}
 		target.move_to(hand)
-		await yield_to(target._tween, "tween_all_completed", 1)
+		await yield_to(target._tween, "finished", 1)
 		assert_signal_emitted_with_parameters(
 					target,"card_moved_to_hand",
 					[target,"card_moved_to_hand",
@@ -295,7 +295,7 @@ class TestCardMovedToBoard:
 					"set_faceup": false}],
 				"trigger": "another"}}
 		target.move_to(board, -1, Vector2(100,100))
-		await yield_to(target._tween, "tween_all_completed", 1)
+		await yield_to(target._tween, "finished", 1)
 		assert_signal_emitted_with_parameters(
 					target,"card_moved_to_board",
 					[target,"card_moved_to_board",
@@ -361,7 +361,7 @@ class TestCardMovedToPile:
 				"filter_destination": "Discard",
 				"trigger": "another"}}
 		target.move_to(discard)
-		await yield_to(target._tween, "tween_all_completed", 1)
+		await yield_to(target._tween, "finished", 1)
 		assert_signal_emitted_with_parameters(
 					target,"card_moved_to_pile",
 					[target,"card_moved_to_pile",

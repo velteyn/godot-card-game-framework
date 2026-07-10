@@ -7,8 +7,8 @@ class TestMoveToContainer:
 		var card: Card
 		card = cards[2]
 		await drag_drop(card, cfc.NMAP.discard.position)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
 		assert_almost_eq(card.global_position,cfc.NMAP.discard.position,Vector2(2,2),
 				"Card's final position matches pile's position")
 		assert_eq(1,cfc.NMAP.discard.get_card_count(),
@@ -22,8 +22,8 @@ class TestMoveToContainer:
 		await drag_drop(cards[1], cfc.NMAP.discard.position + Vector2(10,10))
 		await move_mouse(Vector2(500,300))
 		await drag_drop(cards[0], cfc.NMAP.deck.position + Vector2(10,10))
-		await yield_to(cards[0]._tween, "tween_all_completed", 0.5)
-		await yield_to(cards[0]._tween, "tween_all_completed", 0.5)
+		await yield_to(cards[0]._tween, "finished", 0.5)
+		await yield_to(cards[0]._tween, "finished", 0.5)
 		assert_almost_eq(cards[2].global_position,
 				cfc.NMAP.discard.global_position,Vector2(2,2),
 				"Card 2 final position matches pile's position")
@@ -49,12 +49,12 @@ class TestMoveToContainer:
 		card = cards[2]
 		await drag_drop(card, Vector2(1000,100))
 		await drag_drop(card, cfc.NMAP.deck.position)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
 	# warning-ignore:return_value_discarded
 		hand.draw_card()
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
 		assert_almost_eq(hand.to_global(card.recalculate_position()),
 				card.global_position,Vector2(2,2),
 				"Card finished move to hand from deck from board")
@@ -65,13 +65,13 @@ class TestPileFacing:
 	func test_pile_facing():
 		var card: Card = cfc.NMAP.deck.get_top_card()
 		card.move_to(cfc.NMAP.discard)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
 		assert_true(card.is_faceup, "Card should be faceup in discard")
 		card = cards[0]
 		card.move_to(cfc.NMAP.deck)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
 		assert_false(card.is_faceup,"Card should be facedown in deck")
 
 class TestPopupView:
@@ -90,7 +90,7 @@ class TestPopupView:
 				"Cards in popup should be returned with get_all_cards()")
 		assert_eq(12,discard.get_node("ViewPopup/CardView").get_child_count(),
 				"All cards all migrated to popup window")
-		assert_eq(1.0,discard.get_node("ViewPopup").modulate[3],
+		assert_true(discard.get_node("ViewPopup").visible,
 				"ViewPopup should be visible")
 		cards[1].move_to(discard)
 		await yield_for(1)
@@ -110,7 +110,7 @@ class TestPopupView:
 		var deck = cfc.NMAP.deck
 		var card: Card = deck.get_top_card()
 		deck._on_View_Button_pressed()
-		await yield_to(deck.get_node('ViewPopup/Tween'), "tween_all_completed", 0.5)
+		await yield_for(0.5)
 		card.move_to(deck)
 		await yield_for(0.3)
 		assert_eq(Vector2(0,0),card.position,
@@ -131,14 +131,14 @@ class TestStacking:
 		var deck : Pile = cfc.NMAP.deck
 		var card: Card = cards[4]
 		card.move_to(deck)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
 		assert_eq(deck.get_stack_position(card),card.position,
 				"Card moved in, placed in stack position")
 		card = cards[2]
 		card.move_to(deck)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
-		await yield_to(card.get_node('Tween'), "tween_all_completed", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
 		assert_eq(deck.get_stack_position(card),card.position,
 				"Card moved in, placed in stack position")
 		deck.shuffle_cards(false)

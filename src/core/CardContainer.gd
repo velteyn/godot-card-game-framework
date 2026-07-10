@@ -163,7 +163,7 @@ func hide_buttons() -> void:
 	manipulation_buttons_tween = create_tween()
 	for button in get_all_manipulation_buttons():
 		manipulation_buttons_tween.tween_property(button, 'modulate:a',
-				0, 0.25).from(button.modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+				0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 
 
 # Shows manipulation buttons
@@ -173,7 +173,7 @@ func show_buttons() -> void:
 	manipulation_buttons_tween = create_tween()
 	for button in get_all_manipulation_buttons():
 		manipulation_buttons_tween.tween_property(button, 'modulate:a',
-				1, 0.25).from(button.modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+				1, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 
 
 # Getter for all_manipulation_buttons

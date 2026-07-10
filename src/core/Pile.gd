@@ -188,7 +188,7 @@ func _pile_add_card(node, _legible_unique_name=false) -> void:
 					_opacity_tween.kill()
 				_opacity_tween = create_tween()
 				_opacity_tween.tween_property($Control, 'self_modulate:a',
-						$Control.self_modulate.a, 0.0).from($Control.self_modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+						$Control.self_modulate.a, 0.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 			card_count_label.text = str(get_card_count())
 	elif node is Card: # This triggers if the ViewPopup node is active
 		# When the player adds card while the viewpopup is active
@@ -212,7 +212,7 @@ func _pile_remove_card(node) -> void:
 				_opacity_tween.kill()
 			_opacity_tween = create_tween()
 			_opacity_tween.tween_property($Control, 'self_modulate:a',
-					0.4, 0.5).from($Control.self_modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+					0.4, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	else:
 		$Control.self_modulate.a = 0.0
 
@@ -472,8 +472,10 @@ func _add_tween_rotation(
 		ease_type = Tween.EASE_IN_OUT):
 	if not _tween or not _tween.is_valid():
 		_tween = create_tween()
-	_tween.tween_property(self, 'rotation_degrees',
-			target_rotation, runtime).from(expected_rotation).set_trans(trans_type).set_ease(ease_type)
+	var tweener = _tween.tween_property(self, 'rotation_degrees',
+			target_rotation, runtime)
+	if tweener:
+		tweener.from(expected_rotation).set_trans(trans_type).set_ease(ease_type)
 
 
 # Card position animation
@@ -485,5 +487,7 @@ func _add_tween_position(
 		ease_type = Tween.EASE_OUT):
 	if not _tween or not _tween.is_valid():
 		_tween = create_tween()
-	_tween.tween_property(self, 'position',
-			target_position, runtime).from(expected_position).set_trans(trans_type).set_ease(ease_type)
+	var tweener = _tween.tween_property(self, 'position',
+			target_position, runtime)
+	if tweener:
+		tweener.from(expected_position).set_trans(trans_type).set_ease(ease_type)

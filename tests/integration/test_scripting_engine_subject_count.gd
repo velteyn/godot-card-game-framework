@@ -12,8 +12,8 @@ class TestBoardseekWithSubjectCount:
 				"subject": "boardseek",
 				"dest_container": "discard"}]}}
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(1,discard.get_card_count(),
 				"boarseek defaults to subject_count 1")
 		target = board.get_card(0)
@@ -23,8 +23,8 @@ class TestBoardseekWithSubjectCount:
 				"subject_count": 2,
 				"dest_container": "discard"}]}}
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(3,discard.get_card_count(),
 				"2 cards in table should have been discarded")
 		target = board.get_card(0)
@@ -34,8 +34,8 @@ class TestBoardseekWithSubjectCount:
 				"subject_count": "all",
 				"dest_container": "discard"}]}}
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(5,discard.get_card_count(),
 				"Rest cards in table should have been discarded")
 
@@ -96,8 +96,8 @@ class TestIndexWithSubjectCount:
 				"dest_container": "discard"}]}}
 		target = deck.get_top_card()
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(1,discard.get_card_count(),
 				"index defaults to subject_count 1")
 		assert_eq(discard,target.get_parent(), "bottom card should be in discard")
@@ -111,8 +111,8 @@ class TestIndexWithSubjectCount:
 				"dest_container": "discard"}]}}
 		target = deck.get_top_card()
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(6,discard.get_card_count(),
 				"5 cards in should have been index sought")
 		assert_eq(discard,target.get_parent(), "bottom card should be in discard")
@@ -126,8 +126,8 @@ class TestIndexWithSubjectCount:
 				"dest_container": "discard"}]}}
 		target = deck.get_top_card()
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(0,deck.get_card_count(),
 				"all cards should be discarded")
 		assert_eq(discard,target.get_parent(), "bottom card should be in discard")
@@ -145,8 +145,8 @@ class TestIndexWithSubjectCount:
 				"dest_container": "discard"}]}}
 		target = deck.get_bottom_card()
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(5,discard.get_card_count(),
 				"5 cards in should have been index sought")
 		assert_eq(discard,target.get_parent(), "bottom card should be in discard")
@@ -159,8 +159,8 @@ class TestIndexWithSubjectCount:
 				"dest_container": "discard"}]}}
 		target = deck.get_bottom_card()
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(0,deck.get_card_count(),
 				"all cards should be discarded")
 		assert_eq(discard,target.get_parent(), "bottom card should be in discard")
@@ -175,8 +175,8 @@ class TestIndexWithSubjectCount:
 				"dest_container": "discard"}]}}
 		target = deck.get_card(5)
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(discard,target.get_parent(), "target card should be in discard")
 		card.scripts = {"manual": {"hand": [
 				{"name": "move_card_to_container",
@@ -187,8 +187,8 @@ class TestIndexWithSubjectCount:
 				"dest_container": "discard"}]}}
 		target = deck.get_card(5)
 		await card.execute_scripts()
-		await yield_to(target._tween, "tween_all_completed", 0.5)
-		await yield_to(target._tween, "tween_all_completed", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(5,deck.get_card_count(),
 				"5 cards in should have been left in deck")
 

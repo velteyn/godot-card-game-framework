@@ -473,7 +473,7 @@ func _on_Card_gui_input(event):
 		# we need to double check that the card which is receiving the
 		# gui input, is actually the one with the highest index.
 		# We use our mouse pointer which is tracking this info.
-		if cfc.NMAP.board.mouse_pointer.current_focused_card \
+		if cfc.NMAP.board.mouse_pointer and cfc.NMAP.board.mouse_pointer.current_focused_card \
 				and self != cfc.NMAP.board.mouse_pointer.current_focused_card:
 			cfc.NMAP.board.mouse_pointer.current_focused_card._on_Card_gui_input(event)
 		# If the player left clicks, we need to see if it's a double-click
@@ -2078,8 +2078,10 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 		if _tween and _tween.is_valid(): _tween.kill()
 		_tween = create_tween()
 		_tween.set_parallel(true)
-		_tween.tween_property(self, 'modulate',
-				Color(1, 1, 1, visibility), time).from(modulate).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		var tweener = _tween.tween_property(self, 'modulate',
+				Color(1, 1, 1, visibility), time)
+		if tweener:
+			tweener.from(modulate).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 
 # Clears all attachment/hosting status.
@@ -2169,7 +2171,9 @@ func _add_tween_rotation(
 		ease_type = Tween.EASE_IN_OUT):
 	if not _tween or not _tween.is_valid():
 		_tween = create_tween()
-	_tween.tween_property($Control, 'rotation', target_rotation, runtime).from(expected_rotation).set_trans(trans_type).set_ease(ease_type)
+	var tweener = _tween.tween_property($Control, 'rotation', target_rotation, runtime)
+	if tweener:
+		tweener.from(expected_rotation).set_trans(trans_type).set_ease(ease_type)
 	# We ensure the card_rotation value is also kept up to date
 	# But onlf it it's one of the expected multiples
 	if int(target_rotation) != card_rotation \
@@ -2186,7 +2190,9 @@ func _add_tween_position(
 		ease_type = Tween.EASE_OUT):
 	if not _tween or not _tween.is_valid():
 		_tween = create_tween()
-	_tween.tween_property(self, 'position', target_position, runtime).from(expected_position).set_trans(trans_type).set_ease(ease_type)
+	var tweener = _tween.tween_property(self, 'position', target_position, runtime)
+	if tweener:
+		tweener.from(expected_position).set_trans(trans_type).set_ease(ease_type)
 
 
 # Card global position animation
@@ -2198,7 +2204,9 @@ func _add_tween_global_position(
 		ease_type = Tween.EASE_IN_OUT):
 	if not _tween or not _tween.is_valid():
 		_tween = create_tween()
-	_tween.tween_property(self, 'global_position', target_position, runtime).from(expected_position).set_trans(trans_type).set_ease(ease_type)
+	var tweener = _tween.tween_property(self, 'global_position', target_position, runtime)
+	if tweener:
+		tweener.from(expected_position).set_trans(trans_type).set_ease(ease_type)
 
 
 # Card scale animation
@@ -2210,7 +2218,9 @@ func _add_tween_scale(
 		ease_type = Tween.EASE_OUT):
 	if not _tween or not _tween.is_valid():
 		_tween = create_tween()
-	_tween.tween_property(self, 'scale', target_scale, runtime).from(expected_scale).set_trans(trans_type).set_ease(ease_type)
+	var tweener = _tween.tween_property(self, 'scale', target_scale, runtime)
+	if tweener:
+		tweener.from(expected_scale).set_trans(trans_type).set_ease(ease_type)
 
 
 # A rudimentary Finite State Engine for cards.

@@ -32,7 +32,7 @@ class TestCostsWithAlterants:
 				"alteration": 4}]}}
 		cfc.flush_cache()
 		await card.execute_scripts()
-		await yield_to(card._tween, "tween_all_completed", 0.5)
+		await yield_to(card._tween, "finished", 0.5)
 		assert_eq(board.counters.get_counter("research"),4,
 				"Counter modified to modification + alterant")
 		assert_eq(card.card_rotation,90,

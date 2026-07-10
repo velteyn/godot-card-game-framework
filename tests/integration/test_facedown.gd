@@ -20,7 +20,7 @@ func test_board_facedown():
 	var card_back = card.get_node("Control/Back")
 	await table_move(card, Vector2(600,200))
 	card.is_faceup = false
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
+	await yield_to(card._flip_tween, "finished", 1)
 	assert_false(card_front.visible,
 			"Front should be invisible when card is turned face down")
 	assert_almost_eq(card_front.scale.x, 0.0, 0.1,
@@ -34,8 +34,8 @@ func test_board_facedown():
 	assert_almost_eq(card_back.position.x, 0.0, 0.1,
 			"Back position.x == 0 when card is turned face down")
 	card.is_faceup = true
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
+	await yield_to(card._flip_tween, "finished", 1)
+	await yield_to(card._flip_tween, "finished", 1)
 	assert_true(card_front.visible,
 			"Front should be visible when card is turned face up again")
 	assert_almost_eq(card_front.scale.x, 1.0, 0.1,
@@ -57,8 +57,8 @@ func test_board_facedown():
 	var view_button  = card.get_node("Control/ManipulationButtons/View")
 	var viewed_icon  = card.card_back.viewed_node
 	card.is_faceup = false
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
+	await yield_to(card._flip_tween, "finished", 1)
+	await yield_to(card._flip_tween, "finished", 1)
 	assert_false(dupe_front.visible,
 			"Dupe Front should be invisible when card is turned face down")
 	assert_almost_eq(dupe_front.scale.x, 0.0, 0.1,
@@ -72,7 +72,7 @@ func test_board_facedown():
 	assert_almost_eq(dupe_back.position.x, 0.0, 0.1,
 			"Dupe Back position.x == 0 when card is turned face down")
 	card.is_faceup = true
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
+	await yield_to(card._flip_tween, "finished", 1)
 	assert_false(view_button.visible,"View button should be invisible while card is face up")
 	assert_true(dupe_front.visible,
 			"Dupe Front should be visible when card is turned face up again")
@@ -90,7 +90,7 @@ func test_board_facedown():
 	assert_false(viewed_icon.visible,
 			"View icon should be invisible after card is turned face up")
 	card.is_faceup = false
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
+	await yield_to(card._flip_tween, "finished", 1)
 	assert_true(view_button.visible,
 			"View button should be visible while card is face down")
 	assert_eq(CFConst.ReturnCode.OK,card.set_is_viewed(false),
@@ -116,7 +116,7 @@ func test_board_facedown():
 			"Dupe is visible after moving mouse in and out to restart focus")
 
 	card.is_faceup = true
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
+	await yield_to(card._flip_tween, "finished", 1)
 	assert_eq(CFConst.ReturnCode.FAILED,card.set_is_viewed(true),
 			"View function returns FAILED when requesting true while card is faceup")
 	assert_eq(CFConst.ReturnCode.OK,card.set_is_viewed(false),
@@ -128,7 +128,7 @@ func test_off_board_facedown():
 	var card_front = card.get_node("Control/Front")
 	var card_back = card.get_node("Control/Back")
 	card.is_faceup = false
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
+	await yield_to(card._flip_tween, "finished", 1)
 	assert_false(card_front.visible,
 			"Front should be invisible when card is turned face down")
 	assert_almost_eq(card_front.scale.x, 0.0, 0.1,
@@ -142,8 +142,8 @@ func test_off_board_facedown():
 	assert_almost_eq(card_back.position.x, 0.0, 0.1,
 			"Back position.x == 0 when card is turned face down")
 	card.is_faceup = true
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
-	await yield_to(card._flip_tween, "tween_all_completed", 1)
+	await yield_to(card._flip_tween, "finished", 1)
+	await yield_to(card._flip_tween, "finished", 1)
 	assert_true(card_front.visible,
 			"Front should be visible when card is turned face up again")
 	assert_almost_eq(card_front.scale.x, 1.0, 0.1,
