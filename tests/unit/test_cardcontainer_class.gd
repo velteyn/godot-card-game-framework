@@ -8,17 +8,17 @@ func before_each():
 
 func test_methods():
 	var container : Pile = cfc.NMAP.deck
-	assert_eq('CardContainer',container.get_class(),
+	assert_eq('CardContainer',container.get_card_container_class(),
 			'Class name returns correct value')
 
 
 func test_get_card_methods():
 	var container : Pile = cfc.NMAP.deck
-	assert_eq(container.get_child(5),container.get_all_cards()[0],
+	assert_eq(container.get_child(4),container.get_all_cards()[0],
 			"get_all_cards() works")
-	assert_eq(container.get_child(15),container.get_card(10),
+	assert_eq(container.get_child(14),container.get_card(10),
 			"get_card works")
-	assert_eq(4,container.get_card_index(container.get_child(9)),
+	assert_eq(5,container.get_card_index(container.get_child(9)),
 			"get_card_index works")
 	assert_eq(17,container.get_card_count(),
 			"get_card_count() works")
@@ -39,12 +39,12 @@ func test_manipulation_buttons():
 		assert_eq(0.0,button.modulate.a,
 				"Buttons should start invisible")
 	deck.show_buttons()
-	await yield_to(deck.manipulation_buttons_tween, "tween_all_completed", 1)
+	await yield_to(deck.manipulation_buttons_tween, "finished", 1)
 	for button in deck.get_all_manipulation_buttons():
 		assert_eq(1.0,button.modulate.a,
 				"Buttons are visible after shown")
 	deck.hide_buttons()
-	await yield_to(deck.manipulation_buttons_tween, "tween_all_completed", 1)
+	await yield_to(deck.manipulation_buttons_tween, "finished", 1)
 	for button in deck.get_all_manipulation_buttons():
 		assert_eq(0.0,button.modulate.a,
 				"Buttons are invisible after hide")

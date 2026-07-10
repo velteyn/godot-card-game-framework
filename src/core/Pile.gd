@@ -38,6 +38,7 @@ var _has_cards := false
 # The popup node
 var _opacity_tween: Tween
 var _tween: Tween
+var _returning_from_popup := false
 
 var pre_sorted_order: Array
 
@@ -55,9 +56,10 @@ func _ready():
 	set_pile_name(pile_name)
 	# warning-ignore:return_value_discarded
 	shuffle_completed.connect(
-		cfc.signal_propagator._on_signal_received.bind(
-			"shuffle_completed", {"source": name}
-		))
+		func(_source: Node):
+			cfc.signal_propagator._on_signal_received(
+				null, "shuffle_completed", {"source": name}
+			))
 
 
 func _process(_delta) -> void:
@@ -94,16 +96,14 @@ func _on_ViewSorted_Button_pressed() -> void:
 # Ensures the popup window interpolates to visibility when opened
 func _on_ViewPopup_about_to_show() -> void:
 	var popup_tween = create_tween()
-	popup_tween.tween_property($ViewPopup, 'transparency',
-			0.0, 0.5).from(1.0).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+	$ViewPopup/CardView.modulate.a = 0.0
+	popup_tween.tween_property($ViewPopup/CardView, 'modulate:a',
+			1.0, 0.5).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
 
 
 # Puts all [Card] objects to the root node once the popup view window closes
 func _on_ViewPopup_popup_hide():
-	var popup_tween = create_tween()
-	popup_tween.tween_property($ViewPopup, 'transparency',
-			1.0, 0.5).from(0.0).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
-	await popup_tween.finished
+	_returning_from_popup = true
 	for card in pre_sorted_order:
 		# For each card we have hosted, we check if it's hosted in the popup.
 		# If it is, we move it to the root.
@@ -126,6 +126,7 @@ func _on_ViewPopup_popup_hide():
 		manipulation_buttons.visible = true
 	emit_signal("popup_closed")
 	is_popup_open = false
+	_returning_from_popup = false
 
 
 # Populated the popup card viewer with the cards and displays them
@@ -172,7 +173,7 @@ func set_pile_name(value: String) -> void:
 # Also checks if the popup window is currently open, and puts the card
 # directly there in that case.
 func _pile_add_card(node, _legible_unique_name=false) -> void:
-	if not $ViewPopup.visible:
+	if not $ViewPopup.visible or _returning_from_popup:
 		super.add_child(node)
 		if node is Card:
 			_has_cards = true
@@ -221,6 +222,8 @@ func _pile_remove_card(node) -> void:
 func reorganize_stack() -> void:
 	if are_cards_still_animating():
 		return
+	$Control.layout_mode = 0
+	$Control/Highlight.layout_mode = 0
 #	while are_cards_still_animating():
 #		yield(get_tree().create_timer(0.3), "timeout")
 	for c in get_all_cards():
@@ -307,11 +310,9 @@ func _slot_card_into_popup(card: Card) -> void:
 	# Therefore we instantatiate a new Control container
 	# in which to put the card objects.
 	var card_slot := Control.new()
-	card_slot.set_name("CardPopUpSlot")
-	# We set the control container size to be equal
-	# to the card size to which the card will scale.
 	card_slot.custom_minimum_size = card.get_node("Control").custom_minimum_size * card.scale
 	$ViewPopup/CardView.add_child(card_slot)
+	card_slot.name = "CardPopUpSlot"
 	# Finally, the card is added to the temporary control node parent.
 	card_slot.add_child(card)
 	# warning-ignore:return_value_discarded
