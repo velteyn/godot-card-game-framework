@@ -39,6 +39,24 @@
 |---------|---------|
 | `var x setget set_x, get_x` | `var x: int: set(value): x = value; get: return x` |
 
+### ⚠️ Property Recursion in Godot 4
+In Godot 4, property getters/setters always go through themselves from within the class. You CANNOT do:
+```gdscript
+# BAD — infinite recursion
+var name: String: get: return get_name()
+func get_name() -> String:
+    return name  # calls getter again!
+```
+Use a **backing variable**:
+```gdscript
+var _name := ""
+var name: String:
+    get: return _name
+    set(value): set_name(value)
+func set_name(value: String) -> void:
+    _name = value  # never use `name = value` here
+```
+
 ## Scenes/PackedScene
 
 | Godot 3 | Godot 4 |
@@ -75,7 +93,7 @@
 | `event.scancode` | `event.keycode` or `event.physical_keycode` |
 | `str.to_ascii()[0]` | `str.to_ascii_buffer()[0]` |
 
-## Control Nodes
+## Control/Button Nodes
 
 | Godot 3 | Godot 4 |
 |---------|---------|
@@ -89,6 +107,8 @@
 | `self_modulate[3]` | `self_modulate.a` |
 | `custom_fonts/font` | `theme_override_fonts/font` |
 | `custom_styles/panel` | `theme_override_styles/panel` |
+| `Button.pressed` (bool) | `Button.button_pressed` (`.pressed` is now the signal object!) |
+| `Window.size` (Vector2) | `Window.size` is `Vector2i` |
 
 ## Tween
 
@@ -117,6 +137,23 @@
 | `Area` | `Area2D` (2D) / `Area3D` (3D) |
 | `KinematicBody2D` | `CharacterBody2D` |
 | `RigidBody2D` | `RigidBody2D` (same) |
+
+## _ready() Lifecycle
+
+| Godot 3 | Godot 4 |
+|---------|---------|
+| Parent `_ready()` implicitly called | **Must call `super()` explicitly** |
+| `func _ready(): pass` | `func _ready(): super() # calls parent's _ready()` |
+
+If you override `_ready()` in a child class (especially `CardContainer` → `Pile` → `CGFDeck`), the parent's initialization code — including `@onready` var resolution and `cfc.map_node(self)` — will NOT run unless you call `super()`.
+
+## Window/Popup Changes
+
+| Godot 3 | Godot 4 |
+|---------|---------|
+| `popup_hide` signal | Removed. Use `close_requested` or `visibility_changed` instead |
+| `Window.reset_min_size()` | `Window.reset_size()` (PopupPanel is Window-based) |
+| `Window.size` (Vector2) | `Window.size` is `Vector2i` |
 
 ## Miscellaneous
 

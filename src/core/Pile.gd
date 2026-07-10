@@ -174,11 +174,11 @@ func set_pile_name(value: String) -> void:
 func _pile_add_card(node, _legible_unique_name=false) -> void:
 	if not $ViewPopup.visible:
 		super.add_child(node)
-		if node as Card:
+		if node is Card:
 			_has_cards = true
 			# By raising the $Control every time a card is added
 			# we ensure it's always drawn on top of the card objects
-			$Control.raise()
+			$Control.move_to_front()
 			# If this was the first card which enterred this pile
 			# We hide the pile "floor" by making it transparent
 		if get_card_count() >= 1:
@@ -189,7 +189,7 @@ func _pile_add_card(node, _legible_unique_name=false) -> void:
 				_opacity_tween.tween_property($Control, 'self_modulate:a',
 						$Control.self_modulate.a, 0.0).from($Control.self_modulate.a).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 			card_count_label.text = str(get_card_count())
-	elif node as Card: # This triggers if the ViewPopup node is active
+	elif node is Card: # This triggers if the ViewPopup node is active
 		# When the player adds card while the viewpopup is active
 		# we move them automatically to the viewpopup grid.
 		_slot_card_into_popup(node)
@@ -253,7 +253,7 @@ func reorganize_stack() -> void:
 # Override to make sure the $Control node is always drawn on top of Card nodes
 func _pile_move_child(child_node, to_position) -> void:
 	super.move_child(child_node, to_position)
-	$Control.raise()
+	$Control.move_to_front()
 
 # The top position of a pile, is always the lowest
 func move_card_to_top(card: Card) -> void:

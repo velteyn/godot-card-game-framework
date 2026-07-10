@@ -94,7 +94,7 @@ func costs_dry_run() -> bool:
 # It receives array with all the tasks to execute,
 # then turns each array element into a [ScriptTask] object and
 # send it to the appropriate tasks.
-func execute(_run_type := CFInt.RunType.NORMAL) -> void:
+func execute(_run_type := CFInt.RunType.NORMAL):
 	snapshot_id = randf_range(1,10000000)
 	all_tasks_completed = false
 	run_type = _run_type
@@ -435,7 +435,7 @@ func mod_tokens(script: ScriptTask) -> int:
 #		* [KEY_BOARD_POSITION](ScriptProperties#KEY_BOARD_POSITION)
 # * Optionally uses the following keys:
 #	* [KEY_OBJECT_COUNT](ScriptProperties#KEY_OBJECT_COUNT)
-func spawn_card(script: ScriptTask) -> void:
+func spawn_card(script: ScriptTask):
 	var card: Card
 	var count: int
 	var alteration = 0
@@ -508,7 +508,7 @@ func spawn_card(script: ScriptTask) -> void:
 #	* [KEY_DEST_CONTAINER](ScriptProperties#KEY_DEST_CONTAINER): The container in which to place the created card
 # * Optionally uses the following keys:
 #	* [KEY_OBJECT_COUNT](ScriptProperties#KEY_OBJECT_COUNT)
-func spawn_card_to_container(script: ScriptTask) -> void:
+func spawn_card_to_container(script: ScriptTask):
 	var card: Card
 	var count: int
 	var alteration = 0
@@ -589,7 +589,7 @@ func spawn_card_to_container(script: ScriptTask) -> void:
 # Task from shuffling a CardContainer
 # * Requires the following keys:
 #	* [KEY_DEST_CONTAINER](ScriptProperties#KEY_DEST_CONTAINER)
-func shuffle_container(script: ScriptTask) -> void:
+func shuffle_container(script: ScriptTask):
 	var container: CardContainer = cfc.NMAP[script.get_property(SP.KEY_DEST_CONTAINER).to_lower()]
 	while container.are_cards_still_animating():
 		await container.get_tree().create_timer(0.2).timeout
@@ -729,7 +729,7 @@ func modify_properties(script: ScriptTask) -> int:
 # * Requires the following keys:
 #	* [KEY_ASK_INTEGER_MIN](ScriptProperties#KEY_ASK_INTEGER_MIN)
 #	* [KEY_ASK_INTEGER_MAX](ScriptProperties#KEY_ASK_INTEGER_MAX)
-func ask_integer(script: ScriptTask) -> void:
+func ask_integer(script: ScriptTask):
 	var integer_dialog = _ASK_INTEGER_SCENE.instantiate()
 	# AskInteger tasks have to always provide a min and max value
 	var minimum = script.get_property(SP.KEY_ASK_INTEGER_MIN)
@@ -751,7 +751,7 @@ func ask_integer(script: ScriptTask) -> void:
 # * Optionally uses the following keys:
 #	* [KEY_OBJECT_COUNT](ScriptProperties#KEY_OBJECT_COUNT)
 #	* [KEY_GRID_NAME](ScriptProperties#KEY_GRID_NAME)
-func add_grid(script: ScriptTask) -> void:
+func add_grid(script: ScriptTask):
 	var count: int
 	var grid_name : String = script.get_property(SP.KEY_GRID_NAME)
 	var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)

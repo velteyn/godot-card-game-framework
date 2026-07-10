@@ -354,13 +354,13 @@ func _init_card_layout() -> void:
 	# It already has a CardBack node, so we don't want to replicate it
 	# so we only add a CardBack node, if we know it's not a dupe focus
 	if get_parent().name != "SubViewport":
-		var card_front_instance = card_front_design.instance()
+		var card_front_instance = card_front_design.instantiate()
 		_card_front_container.add_child(card_front_instance)
 		card_front = card_front_instance
 		# We do not need to instance the card_back when card is seen
 		# in a preview card grid
 		if not (get_parent() is CVGridCardObject):
-			var card_back_instance = card_back_design.instance()
+			var card_back_instance = card_back_design.instantiate()
 			_card_back_container.add_child(card_back_instance)
 			card_back = card_back_instance
 			_card_back_container.move_child(card_back,0)
@@ -744,7 +744,7 @@ func refresh_property_label(property: String) -> void:
 	# Normally they should be defined in CardConfig.PROPERTIES_STRINGS
 	# but this is also the fallback we use for
 	# properties undefined in CardConfig
-	elif card_front.card_labels[property] as RichTextLabel:
+	elif card_front.card_labels[property] is RichTextLabel:
 		card_front.set_rich_label_text(label_node, _get_formatted_text(properties[property]))
 	else:
 		card_front.set_label_text(label_node, _get_formatted_text(properties[property]))
@@ -836,21 +836,21 @@ func resize_recursively(control_node: Node, requested_scale: float) -> void:
 	if _original_layouts.has(control_node)\
 			and CFUtils.compare_floats(requested_scale, _original_layouts[control_node].get('scale')):
 		return
-	if control_node as Control and not _original_layouts.has(control_node):
+	if control_node is Control and not _original_layouts.has(control_node):
 		_original_layouts[control_node] = {}
 		_original_layouts[control_node]["size"] = control_node.custom_minimum_size
 		_original_layouts[control_node]["position"] = control_node.position
-		if control_node as MarginContainer:
+		if control_node is MarginContainer:
 			for margin in ["top","bottom", "left", "right"]:
 				_original_layouts[control_node]["margin_" + margin]\
 						= control_node.get("theme_override_constants/margin_" + margin)
 	for child in control_node.get_children():
 		resize_recursively(child, requested_scale)
-	if control_node as Control:
+	if control_node is Control:
 		control_node.custom_minimum_size = _original_layouts[control_node]["size"] * requested_scale
 		control_node.call_deferred('set_size', control_node.custom_minimum_size)
 		control_node.position = _original_layouts[control_node]["position"] * requested_scale
-		if control_node as MarginContainer:
+		if control_node is MarginContainer:
 			for margin in ["top","bottom", "left", "right"]:
 				var current_margin = control_node.get("theme_override_constants/margin_" + margin)
 				if not current_margin:
@@ -1006,7 +1006,7 @@ func set_card_name(value : String, set_label := true) -> void:
 	else:
 		# We set all areas of the card to match the canonical name.
 		var name_label = card_front.card_labels["Name"]
-		if set_label and name_label as RichTextLabel:
+		if set_label and name_label is RichTextLabel:
 			card_front.set_rich_label_text(name_label,value)
 		elif set_label:
 			card_front.set_label_text(name_label,value)
@@ -1201,11 +1201,11 @@ func move_to(targetHost: Node,
 		# which will make the card appear to be be resizing as it's moving
 		var parent_scale: Vector2
 		var target_scale: Vector2
-		if parentHost as Control:
+		if parentHost is Control:
 			parent_scale = parentHost.scale
 		else:
 			parent_scale = parentHost.scale
-		if targetHost as Control:
+		if targetHost is Control:
 			target_scale = targetHost.scale
 		else:
 			target_scale = targetHost.scale
@@ -1295,42 +1295,43 @@ func move_to(targetHost: Node,
 				# One for the fancy move, and then the move to the final position.
 				# If we don't then the card will appear to teleport
 				# to the pile before starting animation
-		if _tween and _tween.is_valid():
-			await _tween.finished
-		if cfc.game_settings.fancy_movement:
+		else:
 			if _tween and _tween.is_valid():
 				await _tween.finished
-				targetHost.reorganize_stack()
-		else:
-			interruptTweening()
-			_target_rotation = _recalculate_rotation()
-			if potential_host:
-				# The _potential_cards are always organized so that the card higher
-				# in index that we were hovering over, is the last in the array.
-				attach_to_host(potential_host)
+			if cfc.game_settings.fancy_movement:
+				if _tween and _tween.is_valid():
+					await _tween.finished
+					targetHost.reorganize_stack()
 			else:
-				# The developer is allowed to pass a position override to the
-				# card placement which also bypasses manual drop placement
-				# restrictions
-				if typeof(board_position) == TYPE_VECTOR2:
-					_target_position = board_position
-				elif board_position as BoardPlacementSlot:
-					_target_position = board_position.global_position
-					board_position.occupying_card = self
-					_placement_slot = board_position
+				interruptTweening()
+				_target_rotation = _recalculate_rotation()
+				if potential_host:
+					# The _potential_cards are always organized so that the card higher
+					# in index that we were hovering over, is the last in the array.
+					attach_to_host(potential_host)
 				else:
-					_determine_target_position_from_mouse()
-				get_parent().move_child(self, get_parent().get_child_count() - 1)
-			set_state(CardState.DROPPING_TO_BOARD)
-			emit_signal("card_moved_to_board",
-					self,
-					"card_moved_to_board",
-					 {
-						"destination": targetHost.name,
-						"source": parentHost.name,
-						"tags": tags
-					}
-			)
+					# The developer is allowed to pass a position override to the
+					# card placement which also bypasses manual drop placement
+					# restrictions
+					if typeof(board_position) == TYPE_VECTOR2:
+						_target_position = board_position
+					elif board_position is BoardPlacementSlot:
+						_target_position = board_position.global_position
+						board_position.occupying_card = self
+						_placement_slot = board_position
+					else:
+						_determine_target_position_from_mouse()
+					get_parent().move_child(self, get_parent().get_child_count() - 1)
+				set_state(CardState.DROPPING_TO_BOARD)
+				emit_signal("card_moved_to_board",
+						self,
+						"card_moved_to_board",
+						 {
+							"destination": targetHost.name,
+							"source": parentHost.name,
+							"tags": tags
+						}
+				)
 		if is_instance_valid(parentHost) and parentHost.is_in_group("hands"):
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
@@ -1972,7 +1973,11 @@ func _organize_attachments() -> void:
 #
 # Returns the adjusted global_mouse_position
 func _determine_board_position_from_mouse() -> Vector2:
-	var targetpos: Vector2 = cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos() - (_drag_offset * scale)
+	var targetpos: Vector2
+	if cfc.NMAP.board.mouse_pointer:
+		targetpos = cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos() - (_drag_offset * scale)
+	else:
+		targetpos = get_global_mouse_position() - (_drag_offset * scale)
 	if targetpos.x + card_size.x * scale.x >= get_viewport().size.x:
 		targetpos.x = get_viewport().size.x - card_size.x * scale.x
 	if targetpos.x < 0:

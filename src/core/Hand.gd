@@ -194,7 +194,7 @@ func re_place():
 		# This yield allows the other control nodes to set their side
 		# In which case the hand, which is typically set to expand vertically
 		# doesn't expand too much
-		await get_tree().idle_frame
+		await get_tree().process_frame
 		$Control.call_deferred("set_size", get_parent().size)
 #		$Control.rect_size = get_parent().rect_size
 #		print_debug(get_parent().rect_size)
@@ -214,7 +214,7 @@ func re_place():
 	# hand-size.
 	call_deferred("_init_control_size")
 	if not cfc.ut:
-		await get_tree().idle_frame
+		await get_tree().process_frame
 	for c in get_all_cards():
 		c.position = c.recalculate_position()
 

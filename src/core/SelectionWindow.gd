@@ -153,7 +153,7 @@ func initiate_selection(
 	var shown_columns = min(_card_grid.columns, card_array.size())
 	var card_size = CFConst.CARD_SIZE
 	var thumbnail_scale = CFConst.THUMBNAIL_SCALE
-	if card_sample as Card:
+	if card_sample is Card:
 		card_size = card_sample.canonical_size
 		thumbnail_scale = card_sample.thumbnail_scale
 	var popup_size_x = (card_size.x * thumbnail_scale * shown_columns * cfc.curr_scale)\

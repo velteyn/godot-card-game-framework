@@ -67,7 +67,7 @@ func _on_MousePointer_area_entered(area: Area2D) -> void:
 		#print("enter:",area.name)
 		_discover_focus()
 
-func _check_for_stale_overlaps() -> void:
+func _check_for_stale_overlaps():
 #	print_debug([overlaps])
 	var reset_mouse := false
 	for a in overlaps:
@@ -100,7 +100,7 @@ func _on_MousePointer_area_exited(area: Area2D) -> void:
 		# We stop the highlight on any areas we exit with the mouse.
 		if area is Card or area is CardContainer:
 			area.highlight.set_highlight(false)
-		elif area.get_parent() as BoardPlacementSlot:
+		elif area.get_parent() is BoardPlacementSlot:
 			area.get_parent().set_highlight(false)
 		overlaps.erase(area)
 		#print("exit:",area.name)
@@ -135,9 +135,9 @@ func disable() -> void:
 	is_disabled = true
 	for area in overlaps:
 		# We stop the highlight on any areas we were currently highlighting
-		if area as Card or area as CardContainer:
+		if area is Card or area is CardContainer:
 			area.highlight.set_highlight(false)
-		elif area.get_parent() as BoardPlacementSlot:
+		elif area.get_parent() is BoardPlacementSlot:
 			area.get_parent().set_highlight(false)
 	overlaps.clear()
 
@@ -194,12 +194,12 @@ func _discover_focus() -> void:
 					and not area in current_focused_card.attachments \
 					and area.state == Card.CardState.ON_PLAY_BOARD:
 						potential_hosts.append(area)
-		if area.get_parent() as BoardPlacementSlot \
+		if area.get_parent() is BoardPlacementSlot \
 				and _is_placement_slot_valid(area.get_parent(),potential_cards):
 			potential_slots.append(area.get_parent())
-#		if area.get_parent() as BoardPlacementSlot and cfc.card_drag_ongoing and cfc.card_drag_ongoing.is_attachment and not potential_cards.empty():
+#		if area.get_parent() is BoardPlacementSlot and cfc.card_drag_ongoing and cfc.card_drag_ongoing.is_attachment and not potential_cards.empty():
 #			print_debug(potential_cards)
-		if area as CardContainer and cfc.card_drag_ongoing:
+		if area is CardContainer and cfc.card_drag_ongoing:
 		# If disable_dropping_to_cardcontainers is set to true, we still
 		# Allow the player to return the card where they got it.
 			if not cfc.card_drag_ongoing.disable_dropping_to_cardcontainers\

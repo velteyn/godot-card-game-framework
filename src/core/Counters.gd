@@ -136,7 +136,7 @@ func mod_counter(counter_name: String,
 # Returns the value of the specified counter.
 # Takes into account temp_count_modifiers and alterants
 func get_counter(counter_name: String, requesting_object = null) -> int:
-	var count = get_counter_and_alterants(counter_name, requesting_object).count
+	var count = (await get_counter_and_alterants(counter_name, requesting_object)).count
 	return(count)
 
 
@@ -152,7 +152,7 @@ func get_counter(counter_name: String, requesting_object = null) -> int:
 #	temp_count_modifiers
 func get_counter_and_alterants(
 		counter_name: String,
-		requesting_object = null) -> Dictionary:
+		requesting_object = null):
 	var count = counters[counter_name]
 	# We iterate through the values, where each value is a dictionary
 	# with key being the counter name, and value being the temp modifier

@@ -19,8 +19,8 @@ class TestCostsWithAlterants:
 				{"name": "rotate_card",
 				"subject": "self",
 				"degrees": 90}]}}
-		await table_move(card, Vector2(200,200)).completed
-		card.execute_scripts()
+		await table_move(card, Vector2(200,200))
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),5,
 				"Counter not modifed because it brought cost too high")
 		assert_eq(card.card_rotation,0,
@@ -31,8 +31,8 @@ class TestCostsWithAlterants:
 				"filter_counter_name": "research",
 				"alteration": 4}]}}
 		cfc.flush_cache()
-		card.execute_scripts()
-		await yield_to(card._tween, "tween_all_completed", 0.5).YIELD
+		await card.execute_scripts()
+		await yield_to(card._tween, "tween_all_completed", 0.5)
 		assert_eq(board.counters.get_counter("research"),4,
 				"Counter modified to modification + alterant")
 		assert_eq(card.card_rotation,90,
@@ -51,7 +51,7 @@ class TestAlterantsRespectState:
 				{"name": "mod_counter",
 				"counter_name":  "research",
 				"modification": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),3,
 				"Counter set to the specified amount because alterant not state-applicable")
 
@@ -74,7 +74,7 @@ class TestSelfAlterants:
 				]
 			}
 		}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),6,
 				"Altered self execution")
 
@@ -94,7 +94,7 @@ class TestAlterantsPer:
 				{"name": "mod_counter",
 				"counter_name":  "research",
 				"modification": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),13,
 				"Altered counter per other counter")
 
@@ -114,7 +114,7 @@ class TestAlterantsRespectSingleTag:
 				"tags": ["GUT"],
 				"counter_name":  "research",
 				"modification": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),3,
 				"Counter not altered because single tag doesn't match")
 		target.scripts = {"alterants": {"hand": [
@@ -123,7 +123,7 @@ class TestAlterantsRespectSingleTag:
 				"filter_tags": "GUT",
 				"filter_counter_name": "research",
 				"alteration": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),9,
 				"Counter altered single tag as string matches")
 
@@ -143,7 +143,7 @@ class TestAlterantsRespectMultipleTags:
 				"tags": ["GUT"],
 				"counter_name":  "research",
 				"modification": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),3,
 				"Counter not altered because tag doesn't match")
 		target.scripts = {"alterants": {"hand": [
@@ -152,7 +152,7 @@ class TestAlterantsRespectMultipleTags:
 				"filter_tags": ["GUT"],
 				"filter_counter_name": "research",
 				"alteration": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),9,
 				"Counter altered because single tag in array matches")
 		card.scripts = {"manual": {"hand": [
@@ -160,8 +160,8 @@ class TestAlterantsRespectMultipleTags:
 				"tags": ["GUT", "CGF"],
 				"counter_name":  "research",
 				"modification": 3}]}}
-		await yield_for(0.5).YIELD
-		card.execute_scripts()
+		await yield_for(0.5)
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),15,
 				"Counter altered because tag matches one of the tags defined in task")
 		target.scripts = {"alterants": {"hand": [
@@ -170,7 +170,7 @@ class TestAlterantsRespectMultipleTags:
 				"filter_tags": ["GUT","FALSE"],
 				"filter_counter_name": "research",
 				"alteration": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),18,
 				"Counter not altered one of the filtered tags does not match")
 		target.scripts = {"alterants": {"hand": [
@@ -179,7 +179,7 @@ class TestAlterantsRespectMultipleTags:
 				"filter_tags": ["GUT","CGF"],
 				"filter_counter_name": "research",
 				"alteration": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),24,
 				"Counter altered because all of filtered tags  match")
 
@@ -198,7 +198,7 @@ class TestDifferentAlterants:
 				{"name": "mod_counter",
 				"counter_name":  "research",
 				"modification": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),4,
 				"Research counter not affected by token alterant")
 
@@ -223,7 +223,7 @@ class TestAlterantsRespectFilterState:
 				{"name": "mod_counter",
 				"counter_name":  "research",
 				"modification": 1}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		cards[1].execute_scripts()
 		assert_eq(board.counters.get_counter("research"),5,
 				"Research counter not affected by token alterant of not matching trigger card")
@@ -244,7 +244,7 @@ class TestAlterantsRespectPolarity:
 				{"name": "mod_counter",
 				"counter_name":  "research",
 				"modification": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),5,
 				"Alterant cannot turn a positive amount into a negative")
 	# warning-ignore:return_value_discarded
@@ -258,7 +258,7 @@ class TestAlterantsRespectPolarity:
 				{"name": "mod_counter",
 				"counter_name":  "research",
 				"modification": -3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),5,
 				"Alterant cannot turn a negative amount into a positive")
 
@@ -280,7 +280,7 @@ class TestCounterAlterants:
 				{"name": "mod_counter",
 				"counter_name":  "research",
 				"modification": 3}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),4,
 				"Counter set to the specified amount + alterant")
 		assert_eq(board.counters.get_counter("credits"),100,
@@ -305,8 +305,8 @@ class TestTokenAlterants:
 				"subject": "self",
 				"modification": 3,
 				"token_name":  "industry"}]}}
-		await table_move(card, Vector2(200,200)).completed
-		card.execute_scripts()
+		await table_move(card, Vector2(200,200))
+		await card.execute_scripts()
 		var industry_token: Token = card.tokens.get_token("industry")
 		var blood_token: Token = card.tokens.get_token("blood")
 		assert_not_null(industry_token)
@@ -320,7 +320,7 @@ class TestTokenAlterants:
 				"trigger": "another",
 				"filter_token_name": "industry",
 				"alteration": -2}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		if industry_token:
 			assert_eq(industry_token.count,5,
 					"Increased by the specified amount + alterant")
@@ -340,7 +340,7 @@ class TestSpawnCardAlterants:
 				"card_name": "Spawn Card",
 				"object_count": 1,
 				"board_position":  Vector2(200,200)}]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(4,board.get_card_count(),
 			"Correct amount of cards spawned on board")
 
@@ -376,7 +376,7 @@ class TestGetTokenAlterants:
 	extends "res://tests/ScEng_common.gd"
 
 	func test_get_token_alterants():
-		await table_move(target, Vector2(200,200)).completed
+		await table_move(target, Vector2(200,200))
 	# warning-ignore:return_value_discarded
 		target.tokens.mod_token("blood")
 	# warning-ignore:return_value_discarded
@@ -414,11 +414,11 @@ class TestGetPropertyAlterants:
 				"trigger": "another",
 				"filter_property_name": "Cost",
 				"alteration": 3},]}}
-		assert_eq(target.get_property("Cost"),5,
+		assert_eq(await target.get_property("Cost"),5,
 				"Alterant modifies retrieved property value")
-		assert_eq(target.get_property("Power"),2,
+		assert_eq(await target.get_property("Power"),2,
 				"Alterant not modified different property")
-		assert_eq(card.get_property("Cost"),2,
+		assert_eq(await card.get_property("Cost"),2,
 				"Alterant not modified retrieved counter value when trigger is self")
 
 
@@ -443,24 +443,24 @@ class TestPropertiesAlterants:
 				{"name": "modify_properties",
 				"subject": "self",
 				"set_properties": {"Cost": "+1"}}]}}
-		card.execute_scripts()
-		assert_eq(card.get_property("Cost"),2,
+		await card.execute_scripts()
+		assert_eq(await card.get_property("Cost"),2,
 				"Cost altered correctly")
-		assert_eq(card.get_property("Power"),0,
+		assert_eq(await card.get_property("Power"),0,
 				"Cost altered correctly")
 		card.scripts = {"manual": {"hand": [
 				{"name": "modify_properties",
 				"subject": "self",
 				"set_properties": {"Cost": 7}}]}}
-		card.execute_scripts()
-		assert_eq(card.get_property("Cost"),8,
+		await card.execute_scripts()
+		assert_eq(await card.get_property("Cost"),8,
 				"Cost altered correctly")
 		card.scripts = {"manual": {"hand": [
 				{"name": "modify_properties",
 				"subject": "self",
 				"set_properties": {"Cost": "-1"}}]}}
-		card.execute_scripts()
-		assert_eq(card.get_property("Cost"),8,
+		await card.execute_scripts()
+		assert_eq(await card.get_property("Cost"),8,
 				"Cost altered correctly")
 
 
@@ -480,29 +480,29 @@ class TestPropertiesWithPolarity:
 				{"name": "modify_properties",
 				"subject": "self",
 				"set_properties": {"Cost": "+1"}}]}}
-		card.execute_scripts()
-		assert_eq(card.get_property("Cost"),2,
+		await card.execute_scripts()
+		assert_eq(await card.get_property("Cost"),2,
 				"Cost altered correctly")
 		card.scripts = {"manual": {"hand": [
 				{"name": "modify_properties",
 				"subject": "self",
 				"set_properties": {"Cost": 7}}]}}
-		card.execute_scripts()
-		assert_eq(card.get_property("Cost"),8,
+		await card.execute_scripts()
+		assert_eq(await card.get_property("Cost"),8,
 				"Cost altered correctly")
 		card.scripts = {"manual": {"hand": [
 				{"name": "modify_properties",
 				"subject": "self",
 				"set_properties": {"Cost": "-1"}}]}}
-		card.execute_scripts()
-		assert_eq(card.get_property("Cost"),7,
+		await card.execute_scripts()
+		assert_eq(await card.get_property("Cost"),7,
 				"Cost altered correctly")
 		card.scripts = {"manual": {"hand": [
 				{"name": "modify_properties",
 				"subject": "self",
 				"set_properties": {"Cost": 4}}]}}
-		card.execute_scripts()
-		assert_eq(card.get_property("Cost"),4,
+		await card.execute_scripts()
+		assert_eq(await card.get_property("Cost"),4,
 				"Cost altered correctly")
 		target.scripts = {"alterants": {"hand": [
 				{"filter_task": "modify_properties",
@@ -514,6 +514,6 @@ class TestPropertiesWithPolarity:
 				{"name": "modify_properties",
 				"subject": "self",
 				"set_properties": {"Cost": "-1"}}]}}
-		card.execute_scripts()
-		assert_eq(card.get_property("Cost"),2,
+		await card.execute_scripts()
+		assert_eq(await card.get_property("Cost"),2,
 				"Cost altered correctly")

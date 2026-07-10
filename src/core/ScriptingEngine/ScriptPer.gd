@@ -5,7 +5,7 @@ extends ScriptObject
 
 
 # prepares the properties needed by the task to function.
-func _init(per_msg: perMessage) -> void:
+func _init(per_msg: perMessage):
 	super(per_msg.script_owner, per_msg.per_definitions, per_msg.trigger_object)
 	# The name of the type of per we're seeking gets its own var
 	script_name = per_msg.per_seek

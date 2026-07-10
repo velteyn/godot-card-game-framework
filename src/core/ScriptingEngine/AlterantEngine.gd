@@ -53,7 +53,7 @@ func _init(
 # It takes the array with all the possible alterations to execute,
 # then turns each array element into a [ScriptAlter] object which check
 # against the relevant filters and per_ requests.
-func execute() -> void:
+func execute():
 	for alter_task in alterants_queue:
 		if not alter_task.is_primed:
 			await alter_task.primed

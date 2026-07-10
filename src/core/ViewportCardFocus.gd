@@ -208,9 +208,9 @@ func _input(event):
 	# We use this to allow the developer to take card screenshots
 	# for any number of purposes
 	if event.is_action_pressed("screenshot_card"):
-		var img = _focus_viewport.get_texture().get_data()
-		await get_tree().idle_frame
-		await get_tree().idle_frame
+		var img = _focus_viewport.get_texture().get_image()
+		await get_tree().process_frame
+		await get_tree().process_frame
 		img.convert(Image.FORMAT_RGBA8)
 		img.flip_y()
 		img.save_png("user://" + _current_focus_source.canonical_name + ".png")

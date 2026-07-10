@@ -3,16 +3,14 @@ extends "res://tests/UTcommon.gd"
 var cards := []
 
 func before_each():
-	var confirm_return = setup_main()
-	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = await confirm_return.completed
+	await setup_main()
 	cards = draw_test_cards(5)
-	await yield_for(0.1).YIELD
+	await yield_for(0.1)
 
 func test_single_card_focus():
 	var card : Card = cards[0]
-	await move_mouse(card.global_position).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
+	await move_mouse(card.global_position)
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
 	var focus_dupe = main._previously_focused_cards[card]
 	assert_eq(main.card_focus.get_node('SubViewport').get_child_count(),2,
 			"Duplicate card has been added for viewport focus")
@@ -34,8 +32,8 @@ func test_single_card_focus():
 	assert_eq(focus_dupe._control.size, CFConst.CARD_SIZE * CFConst.FOCUSED_SCALE,
 			"Duplicate's control resized correctly")
 
-	await move_mouse(Vector2(0,0)).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
+	await move_mouse(Vector2(0,0))
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
 	assert_eq(2,main.card_focus.get_node('SubViewport').get_child_count(),
 			"Duplicate card object still remains")
 	assert_false(main._previously_focused_cards[card].visible,
@@ -43,12 +41,12 @@ func test_single_card_focus():
 
 func test_for_leftover_focus_objects():
 	var card : Card = cards[2]
-	await drag_drop(card,cfc.NMAP.discard.position).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
-	await yield_for(0.5).YIELD
+	await drag_drop(card,cfc.NMAP.discard.position)
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
+	await yield_for(0.5)
 	assert_eq(2,main.card_focus.get_node('SubViewport').get_child_count(),
 			"The top face-up card of the deck is now in focus")
-	await move_mouse(Vector2(0,0), 'slow').completed
+	await move_mouse(Vector2(0,0), 'slow')
 	assert_eq(2,main.card_focus.get_node('SubViewport').get_child_count(),
 			"Duplicate card object still remains")
 	assert_false(main._previously_focused_cards[card].visible,
@@ -57,21 +55,21 @@ func test_for_leftover_focus_objects():
 func test_card_back_focus():
 	var card : Card = cards[0]
 	card.is_faceup = false
-	await move_mouse(card.global_position).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
+	await move_mouse(card.global_position)
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
 	var focus_dupe = main._previously_focused_cards[card]
 	assert_eq(focus_dupe.card_back.modulate.a, 1,
 			"Duplicate card back does not modulate out")
-	await move_mouse(Vector2(0,0)).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
+	await move_mouse(Vector2(0,0))
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
 	assert_eq(2,main.card_focus.get_node('SubViewport').get_child_count(),
 			"Duplicate card object still remains")
 
 func test_viewed_card_in_pile():
 	var card : Card = deck.get_top_card()
 	card.is_viewed = true
-	await move_mouse(deck.global_position).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
+	await move_mouse(deck.global_position)
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
 	assert_eq(2,main.card_focus.get_node('SubViewport').get_child_count(),
 			"Duplicate card has been added for viewport focus")
 
@@ -79,10 +77,10 @@ func test_retain_properties():
 	var card : Card = cards[0]
 	# warning-ignore:return_value_discarded
 	card.modify_property("Cost", 100, false, ["Init"])
-	await move_mouse(card.global_position).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
+	await move_mouse(card.global_position)
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
 	var focus_dupe = main._previously_focused_cards[card]
-	assert_eq(focus_dupe.get_property("Cost"), 100,
+	assert_eq(await focus_dupe.get_property("Cost"), 100,
 			"Focus retains modified property values from original")
 
 func test_FocusInfoPanel():
@@ -94,25 +92,25 @@ func test_FocusInfoPanel():
 	card3.properties["_illustration"] = null
 	card3.properties["Tags"] = []
 	card3.properties["_keywords"] = ["Clarification A"]
-	await move_mouse(card2.global_position).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
+	await move_mouse(card2.global_position)
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
 	# warning-ignore:unused_variable
 	var focus_dupe = main._previously_focused_cards[card2]
 	assert_eq(main.focus_info.modulate.a, 1.0,
 			"FocusInfoPanel visible when illustration exists")
 	assert_true(main.focus_info.existing_details['illustration'].visible,
 			"Illustration label visible")
-	await move_mouse(Vector2(0,0), "slow").completed
-	await move_mouse(card.global_position).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
+	await move_mouse(Vector2(0,0), "slow")
+	await move_mouse(card.global_position)
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
 	focus_dupe = main._previously_focused_cards[card]
 	assert_eq(main.focus_info.modulate.a, 0.0,
 			"FocusInfoPanel visible when illustration does not exist")
 	assert_false(main.focus_info.existing_details['illustration'].visible,
 			"Illustration label invisible")
-	await move_mouse(Vector2(0,0), "slow").completed
-	await move_mouse(card3.global_position).completed
-	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1).YIELD
+	await move_mouse(Vector2(0,0), "slow")
+	await move_mouse(card3.global_position)
+	await yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1)
 	focus_dupe = main._previously_focused_cards[card3]
 	assert_eq(main.focus_info.modulate.a, 1.0,
 			"FocusInfoPanel visible")

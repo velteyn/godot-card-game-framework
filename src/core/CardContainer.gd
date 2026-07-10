@@ -72,7 +72,7 @@ func _process(_delta: float) -> void:
 
 
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
+func _ready():
 	cfc.map_node(self)
 	# We use the below while to wait until all the nodes we need have been mapped
 	# "hand" should be one of them.

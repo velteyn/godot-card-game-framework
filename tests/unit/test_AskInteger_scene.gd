@@ -77,28 +77,28 @@ func test_on_LineEdit_text_changed():
 	assert_eq("10005",line.text)
 
 func test_submit():
-	watch_signals(ask_integer)
 	ask_integer.prep("UT Card",1,5)
+	watch_signals(ask_integer)
 	ask_integer._on_AskInteger_confirmed()
 	await yield_for(0.1)
 	assert_eq(0,ask_integer.number)
-	assert_signal_not_emitted(ask_integer,"popup_hide")
+	assert_signal_not_emitted(ask_integer,"visibility_changed")
 	line.text = "11"
 	line._on_IntegerLineEdit_text_changed("11")
 	ask_integer._on_AskInteger_confirmed()
 	await yield_for(0.1)
 	assert_eq(0,ask_integer.number)
-	assert_signal_not_emitted(ask_integer,"popup_hide")
+	assert_signal_not_emitted(ask_integer,"visibility_changed")
 	line.text = "abd"
 	line._on_IntegerLineEdit_text_changed("abd")
 	ask_integer._on_AskInteger_confirmed()
 	await yield_for(0.1)
 	assert_eq(0,ask_integer.number)
-	assert_signal_not_emitted(ask_integer,"popup_hide")
+	assert_signal_not_emitted(ask_integer,"visibility_changed")
 	line.text = "2"
 	line._on_IntegerLineEdit_text_changed("2")
 	ask_integer._on_AskInteger_confirmed()
 	await yield_for(0.1)
-	assert_signal_emitted(ask_integer,"popup_hide")
+	assert_signal_emitted(ask_integer,"visibility_changed")
 	assert_eq(2,ask_integer.number)
 

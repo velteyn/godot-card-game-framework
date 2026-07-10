@@ -37,7 +37,7 @@ func _init(owner,
 
 
 
-func prime(_prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
+func prime(_prev_subjects: Array, run_type: int, sceng_stored_int: int):
 	# We store the prev_subjects we sent to this task in case we need to
 	# refer to them later
 	prev_subjects = _prev_subjects

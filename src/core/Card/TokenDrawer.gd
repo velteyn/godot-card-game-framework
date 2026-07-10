@@ -42,7 +42,7 @@ func set_is_drawer_open(value: bool) -> void:
 #
 # The drawer will not appear while another animation is ongoing
 # and it will appear only while the card is on the board.
-func token_drawer(requested_state := true) -> void:
+func token_drawer(requested_state := true):
 	# I use these vars to avoid writing it all the time and to improve readability
 
 	var td := $Drawer

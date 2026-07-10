@@ -57,6 +57,7 @@ var deck_summaries
 @onready var _randomize_name_button := $VBC/HBC/DeckMC/CurrentDeck/HBoxContainer/RandomizeName
 
 func _ready() -> void:
+	super()
 	deck_summaries = deck_summary_scene.instantiate()
 	$VBC/HBC/DeckMC/CurrentDeck/DeckDetails.add_child(deck_summaries)
 	deck_summaries.setup()

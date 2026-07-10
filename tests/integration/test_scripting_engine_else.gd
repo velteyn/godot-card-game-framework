@@ -15,11 +15,11 @@ class TestElse:
 				{"name": "mod_counter",
 				"modification": -10,
 				"counter_name":  "credits"},]}}
-		await table_move(card, Vector2(100,200)).completed
-		card.execute_scripts()
+		await table_move(card, Vector2(100,200))
+		await card.execute_scripts()
 		assert_eq(1,board.counters.get_counter("research"),
 				"Counter increased because rotation cost could be paid")
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(90,board.counters.get_counter("credits"),
 				"Counter decreased because rotation cost could be paid")
 

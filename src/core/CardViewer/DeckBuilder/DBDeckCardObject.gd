@@ -19,13 +19,13 @@ func _ready() -> void:
 
 
 # This is used to prepare the values of this object
-func setup(_card_name: String, count: int) -> void:
+func setup(_card_name: String, count: int):
 	card_name = _card_name
 	set_quantity(count)
 	_card_label.text = _card_name
 	# Because with rich Text labels, somehow it's not respecting the fill property.
 	_card_label.custom_minimum_size = get_parent().size
-	await get_tree().idle_frame
+	await get_tree().process_frame
 
 
 # Updates the Quantity label and variable

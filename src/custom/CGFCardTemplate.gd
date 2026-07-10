@@ -2,7 +2,7 @@ extends Card
 
 
 func _ready() -> void:
-	pass
+	super()
 
 # Sample code on how to ensure costs are paid when a card
 # is dragged from hand to the table

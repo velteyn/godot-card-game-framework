@@ -112,14 +112,76 @@
 
 ## Phase 6: Verification
 
-1. Open project in Godot 4.7 editor
-2. Fix any remaining script errors
-3. Run test suite
+1. ~~Open project in Godot 4.7 editor~~ (DONE — loads without errors)
+2. Fix any remaining script errors (IN PROGRESS)
+3. Run test suite (IN PROGRESS — GUT v9.7.0 runs, partial passes)
 4. Visual inspection of UI components
 5. Test card interactions (drag, drop, focus, targeting)
 6. Test scripting engine execution
 7. Test deck builder / card library
 8. Test all dialog scenes
+
+## Current Status Summary
+
+| Phase | Status |
+|-------|--------|
+| 1. Automated Conversion | ✅ Complete |
+| 2. Manual GDScript Fixes | ✅ Complete |
+| 3. Scenes & Resources | ✅ Complete |
+| 4. GUT Testing Framework | ✅ Complete |
+| 5. Project Settings | ✅ Complete |
+| 6. Verification | 🔶 In Progress |
+
+### Verification Progress
+
+| Test File | Status | Notes |
+|-----------|--------|-------|
+| `test_card_class.gd` | ✅ 10/10 passing | 3 bugs fixed this session |
+| `test_AskInteger_scene.gd` | ✅ 3/3 passing | |
+| `test_OptionalConfirmation_scene.gd` | ✅ 5/5 passing | |
+| `test_DeckBuilder.gd` | ✅ 2/2 passing | |
+| `test_token_class.gd` | ✅ 6/6 passing | |
+| `test_cardcontainer_class.gd` | ❌ 2/5 passing | Auto-renaming issues (pre-existing) |
+| `test_pile_class.gd` | ❌ 3/6 passing | Auto-renaming + popup ordering (pre-existing) |
+| Integration tests | ❌ Mostly failing | Pre-existing Tween/signal migration issues |
+
+## Key Godot 4 Pitfalls Discovered
+
+### `_ready()` inheritance
+Godot 4 does NOT automatically call parent `_ready()`. Every overridden `_ready()` must call `super()` explicitly, or the parent's initialization is skipped. This was the root cause of missing NMAP mappings: `CGFDeck._ready()` → `Pile._ready()` → `CardContainer._ready()` chain was broken.
+
+### Property getter/setter recursion
+In Godot 4, property access always goes through the getter/setter, even from within the class. If a getter calls a function that returns `property_name` and that property's getter calls the function, infinite recursion occurs. Fix: use a backing variable (`_property_name`) in getter/setter blocks.
+
+### `Button.pressed` is now the signal object
+`Control.pressed` was renamed to `Control.button_pressed` for the boolean property. In Godot 4, `Button.pressed` returns the signal object. This silently corrupts JSON-serialized game settings.
+
+### `Window.size` is `Vector2i`
+`Window.size` returns `Vector2i`, not `Vector2`. Mixing with `Vector2` in arithmetic operations causes runtime errors.
+
+### `connect()` rejects duplicate callables
+Unlike Godot 3, calling `connect()` with an already-connected callable raises an error. Use `is_connected()` guard when `_ready()` may be called multiple times (e.g., nodes moved between parents).
+
+### `popup_hide` signal removed
+`AcceptDialog`/`Window` no longer has a `popup_hide` signal in Godot 4. Use `close_requested` or `visibility_changed` instead.
+
+### `Window.reset_min_size()` → `reset_size()`
+PopupPanel (Window-based) has `reset_size()` not `reset_min_size()`.
+
+### `Node.name` auto-renames duplicate siblings
+Godot 4 silently appends a numeric suffix to `Node.name` when a sibling already has the same name. Godot 3 allowed duplicates. Tests checking `card.name` now fail. Fix: check `card.canonical_name` (the intended name, stored in a backing variable).
+
+### `move_to()` board-drop code leaks into pile/hand moves
+In `CardTemplate.gd:move_to()`, the code at lines 1309-1344 (setting board position, moving child to end, emitting `card_moved_to_board`) ran AFTER the hand/pile if/elif chain because it lacked an enclosing `else`. Line 1334 `get_parent().move_child(self, get_parent().get_child_count() - 1)` undid the custom index placement from line 1222-1224. Fix: wrap in `else`.
+
+### `RichTextLabel.append_text()` doesn't set `.text`
+In Godot 4, `append_text()` does not update the `text` property of `RichTextLabel`. Godot 3's `append_bbcode()` did. Reading `.text` after `append_text()` returns `""`. Fix: use `rtlabel.text = formatted` instead of `append_text()`.
+
+### GUT v9.7.0 node name mismatch
+GUT v9.7.0 creates a root node named `GutRunner` (not `Gut`). The original guard `has_node('Gut')` in `CGFBoard.gd:_ready()` never matched during tests, causing `load_test_cards(false)` to double-load the deck. Fix: use `cfc.is_testing`.
+
+### `wait_seconds` vs `process_frame` timing
+`SceneTreeTimer` (from `create_timer()`) fires BEFORE `process_frame` in the same frame cycle. Code that uses `await wait_seconds(0)` to "settle" the frame may observe incomplete UI state. A `process_frame` await is needed for `RichTextLabel` and other deferred operations.
 
 ## Risks & Considerations
 

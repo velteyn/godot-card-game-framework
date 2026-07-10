@@ -4,7 +4,13 @@ class_name Token
 extends HBoxContainer
 
 
-@export var count := 0: get = get_count, set = set_count
+var _count := 0
+
+@export var count: int:
+	get:
+		return _count
+	set(value):
+		set_count(value)
 
 var token_drawer
 
@@ -35,7 +41,7 @@ func setup(token_name: String, _token_drawer = null) -> void:
 	var textrect : TextureRect = $CenterContainer/TokenIcon
 	var new_texture = ImageTexture.new();
 	var tex = load(CFConst.PATH_TOKENS + CFConst.TOKENS_MAP[token_name])
-	var image = tex.get_data()
+	var image = tex.get_image()
 	new_texture.create_from_image(image)
 	textrect.texture = new_texture
 	$Name.text = token_name.capitalize()
@@ -43,14 +49,11 @@ func setup(token_name: String, _token_drawer = null) -> void:
 
 # Sets the token counter to the specified value
 func set_count(value := 1) -> void:
-	# We do not allow tokens to be set to negative values
 	if value < 0:
 		value = 0
-	count = value
-	# Solution taken from
-	# https://github.com/godotengine/godot/issues/30460#issuecomment-509697259
+	_count = value
 	if is_inside_tree():
-		count_label.text = str(count)
+		count_label.text = str(_count)
 
 
 # Returns the amount of tokens of this type
@@ -77,9 +80,9 @@ func get_count_and_alterants() -> Dictionary:
 			token_drawer.owner_card,
 			"get_token",
 			{SP.KEY_TOKEN_NAME: name,},
-			count)
+			_count)
 	var return_dict := {
-		"count": count + alteration.value_alteration,
+		"count": _count + alteration.value_alteration,
 		"alteration": alteration
 	}
 	return(return_dict)

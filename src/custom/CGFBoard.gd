@@ -19,7 +19,7 @@ func _ready() -> void:
 	if not cfc.ut:
 		cfc.game_rng_seed = CFUtils.generate_random_seed()
 		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
-	if not get_tree().get_root().has_node('Gut'):
+	if not cfc.is_testing:
 		load_test_cards(false)
 	# warning-ignore:return_value_discarded
 	$DeckBuilderPopup.connect('popup_hide', Callable(self, '_on_DeckBuilder_hide'))

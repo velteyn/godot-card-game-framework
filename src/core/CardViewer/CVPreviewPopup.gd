@@ -23,7 +23,7 @@ func _process(_delta: float) -> void:
 	if _placement_initialized and visible and is_instance_valid(preview_card):
 		_set_placement()
 
-func _set_placement() -> void:
+func _set_placement():
 	if _tween and _tween.is_running():
 		return
 	var new_position : Vector2 = get_preview_placement()

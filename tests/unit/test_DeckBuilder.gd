@@ -62,7 +62,7 @@ func test_plus_minus_freeform_add_remove():
 	var card_object: DBListCardObject = deckbuilder._available_cards.get_child(1)
 	card_object.setup_max_quantity(10)
 	card_object._on_Plus_pressed()
-	await yield_for(0.1).YIELD
+	await yield_for(0.1)
 	var deck_card_obj := card_object.deck_card_object
 	assert_not_null(deck_card_obj)
 	if deck_card_obj:
@@ -72,13 +72,13 @@ func test_plus_minus_freeform_add_remove():
 		card_object._on_Minus_pressed()
 		assert_eq(deck_card_obj.quantity, 1)
 		card_object._on_Minus_pressed()
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		assert_null(card_object.deck_card_object)
 	var iedit : IntegerLineEdit = card_object._quantity_edit
 	watch_signals(iedit)
 	iedit.text = "9"
 	iedit._on_IntegerLineEdit_text_entered("9")
-	await yield_for(0.1).YIELD
+	await yield_for(0.1)
 	assert_signal_emitted_with_parameters(iedit, "int_entered", [9])
 	deck_card_obj = card_object.deck_card_object
 	assert_not_null(deck_card_obj)
@@ -92,7 +92,7 @@ func test_plus_minus_freeform_add_remove():
 		deck_card_obj._on_Minus_pressed()
 		assert_eq(deck_card_obj.quantity, 1)
 		deck_card_obj._on_Minus_pressed()
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		assert_null(card_object.deck_card_object)
 
 func test_save_load_reset():
@@ -104,27 +104,26 @@ func test_save_load_reset():
 	var deck_name : String = deckbuilder._deck_name.text
 	deckbuilder._on_Save_pressed()
 	assert_eq(deckbuilder._notice.text, "Deck saved")
-	assert_true(deckbuilder._notice.get_node("Tween").is_active(),
-			"notice started tweening")
-	assert_true(DirAccess.dir_exists(CFConst.DECKS_PATH),
+	assert_true(DirAccess.dir_exists_absolute(CFConst.DECKS_PATH),
 			"Deck path exists")
 	assert_true(FileAccess.file_exists(CFConst.DECKS_PATH + deck_name + ".json"),
 			"Deck saved correctly")
 	var file = FileAccess.open(CFConst.DECKS_PATH + deck_name + '.json', FileAccess.READ)
 	var test_json_conv = JSON.new()
-	test_json_conv.parse(file.get_as_text())
-	var data = test_json_conv.get_data()
+	var parsed = test_json_conv.parse(file.get_as_text())
 	file.close()
-	assert_eq(typeof(data.result), TYPE_DICTIONARY)
-	if typeof(data.result) == TYPE_DICTIONARY:
-		assert_eq(data.result.name, deck_name,
+	assert_eq(parsed, OK)
+	var data = test_json_conv.data
+	assert_eq(typeof(data), TYPE_DICTIONARY)
+	if typeof(data) == TYPE_DICTIONARY:
+		assert_eq(data.name, deck_name,
 				"Deck name stored correctly")
-		assert_eq(data.result.cards.get(card_object.card_name,0), 3.0,
+		assert_eq(data.cards.get(card_object.card_name,0), 3.0,
 				"Deck card contents stored correctly")
-		assert_eq(data.result.total, 3.0,
+		assert_eq(data.total, 3.0,
 				"Deck card total stored correctly")
 	deckbuilder._on_Reset_pressed()
-	await yield_for(0.5).YIELD
+	await yield_for(0.5)
 	assert_eq(deckbuilder._deck_name.text, deck_name,
 			"Reset Deck Name not randomized")
 	assert_eq(deckbuilder._deck_cards.get_child_count(), 0,
@@ -133,11 +132,11 @@ func test_save_load_reset():
 	assert_gt(deckbuilder._load_button.get_popup().get_item_count(), 0,
 			"Deck list populated correctly")
 	deckbuilder._load_button._on_deck_load(0)
-	await yield_for(0.1).YIELD
+	await yield_for(0.1)
 	assert_ne(deckbuilder._deck_cards.get_child_count(), 0,
 			"Deck List has contents after deck load")
-	deckbuilder._on_deck_loaded(data.result)
-	await yield_for(0.1).YIELD
+	deckbuilder._on_deck_loaded(data)
+	await yield_for(0.1)
 	assert_eq(deckbuilder._notice.text,
 			"Deck loaded")
 	var deck_card_obj := card_object.deck_card_object
@@ -156,7 +155,7 @@ func test_save_load_reset():
 	deckbuilder._on_Delete_pressed()
 	assert_eq(deckbuilder._notice.text,
 			"Deck deleted from disk. Current list not cleared")
-	assert_true(deckbuilder._notice.get_node("Tween").is_active())
+	var dir = DirAccess.open(CFConst.DECKS_PATH)
 	assert_true(dir.dir_exists(CFConst.DECKS_PATH),
 			"Deck path not deleted")
 	assert_false(dir.file_exists(CFConst.DECKS_PATH + deck_name + ".json"),

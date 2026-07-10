@@ -9,7 +9,7 @@ class TestSpawnCard:
 				"card_name": "Spawn Card",
 				"object_count": 3,
 				"board_position":  Vector2(500,200)}]}}
-		target.execute_scripts()
+		await target.execute_scripts()
 		assert_eq(3,board.get_card_count(),
 			"Card spawned on board")
 		card = board.get_card(0)
@@ -28,9 +28,9 @@ class TestSpawnCard:
 				"card_name": "Spawn Card",
 				"object_count": 10,
 				"grid_name":  "BoardPlacementGrid"}]}}
-		target.execute_scripts()
+		await target.execute_scripts()
 		# Give time to the card to instance
-		await yield_for(0.4).YIELD
+		await yield_for(0.4)
 		assert_eq(7,board.get_card_count(),
 			"5 Card spawned on grid")
 		if board.get_card_count() > 1:
@@ -57,8 +57,8 @@ class TestSpawnAndModifyCard:
 					"degrees": 90
 				}
 			]}}
-		target.execute_scripts()
-		await yield_for(0.4).YIELD
+		await target.execute_scripts()
+		await yield_for(0.4)
 		card = board.get_card(0)
 		assert_eq(card.card_rotation, 90,
 				"Spawned card should be pre-selected to be rotated")
@@ -80,10 +80,10 @@ class TestSpawnAndModifyCard:
 					},
 				}
 			]}}
-		target.execute_scripts()
-		await yield_for(0.4).YIELD
+		await target.execute_scripts()
+		await yield_for(0.4)
 		card = board.get_card(0)
-		assert_eq(card.get_property("Cost"), 5,
+		assert_eq(await card.get_property("Cost"), 5,
 				"Spawned card should have modified cost")
-		assert_eq(card.get_property("Tags"), ["Spawn"],
+		assert_eq(await card.get_property("Tags"), ["Spawn"],
 				"Spawned card should have modified tags")

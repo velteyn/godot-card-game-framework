@@ -4,10 +4,10 @@ class TestPerToken:
 	extends "res://tests/ScEng_common.gd"
 
 	func test_per_token_and_modify_token_per():
-		await table_move(card, Vector2(100,200)).completed
+		await table_move(card, Vector2(100,200))
 	# warning-ignore:return_value_discarded
 		card.tokens.mod_token("void",5)
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		card.scripts = {"manual": {
 			"board": [
 				{"name": "mod_tokens",
@@ -20,7 +20,7 @@ class TestPerToken:
 				},
 			]}
 		}
-		card.execute_scripts()
+		await card.execute_scripts()
 		var bio_token = card.tokens.get_token("bio")
 		assert_not_null(bio_token,
 			"Put 1 Bio token per void token on this card")
@@ -40,8 +40,8 @@ class TestPerToken:
 				},
 			]}
 		}
-		card.execute_scripts()
-		await yield_for(0.5).YIELD
+		await card.execute_scripts()
+		await yield_for(0.5)
 		assert_eq(hand.get_card_count(), 9,
 				"Draw 1 card per void token on this card")
 
@@ -65,8 +65,8 @@ class TestPerProperty:
 				},
 			]}
 		}
-		card.execute_scripts()
-		await yield_for(0.5).YIELD
+		await card.execute_scripts()
+		await yield_for(0.5)
 		assert_eq(hand.get_card_count(), 8,
 			"Draw 1 card per cost of this card.")
 
@@ -85,8 +85,8 @@ class TestTutor:
 					"src_container": "deck",
 					"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}]
 				}}]}}
-		target.execute_scripts()
-		await yield_for(0.3).YIELD
+		await target.execute_scripts()
+		await yield_for(0.3)
 		assert_eq(5,board.get_card_count(),
 			"Spawn 1 card per Blue card in the deck")
 
@@ -94,10 +94,10 @@ class TestPerBoardseek:
 	extends "res://tests/ScEng_common.gd"
 
 	func test_per_boardseek():
-		await table_move(cards[1], Vector2(100,200)).completed
-		await table_move(cards[2], Vector2(300,200)).completed
-		await table_move(cards[3], Vector2(500,200)).completed
-		await table_move(cards[4], Vector2(700,200)).completed
+		await table_move(cards[1], Vector2(100,200))
+		await table_move(cards[2], Vector2(300,200))
+		await table_move(cards[3], Vector2(500,200))
+		await table_move(cards[4], Vector2(700,200))
 		card.scripts = {"manual": {"hand": [
 				{"name": "move_card_to_container",
 				"subject": "index",
@@ -110,8 +110,8 @@ class TestPerBoardseek:
 					"subject_count": "all",
 					"filter_state_seek": [{"filter_properties": {"Power": 0}}]
 				}}]}}
-		card.execute_scripts()
-		await yield_for(0.3).YIELD
+		await card.execute_scripts()
+		await yield_for(0.3)
 		assert_eq(hand.get_card_count(), 3,
 				"Draw 1 card per 0-cost card on board")
 
@@ -134,8 +134,8 @@ class TestPerCounter:
 				},
 			]}
 		}
-		card.execute_scripts()
-		await yield_for(0.5).YIELD
+		await card.execute_scripts()
+		await yield_for(0.5)
 		assert_eq(hand.get_card_count(), 8,
 			"Draw 1 card per counter specified")
 
@@ -143,10 +143,10 @@ class TestFilterPerBoardseek:
 	extends "res://tests/ScEng_common.gd"
 
 	func test_filter_per_boardseek():
-		await table_move(cards[1], Vector2(100,200)).completed
-		await table_move(cards[2], Vector2(300,200)).completed
-		await table_move(cards[3], Vector2(500,200)).completed
-		await table_move(cards[4], Vector2(700,200)).completed
+		await table_move(cards[1], Vector2(100,200))
+		await table_move(cards[2], Vector2(300,200))
+		await table_move(cards[3], Vector2(500,200))
+		await table_move(cards[4], Vector2(700,200))
 		# Flip the card facedown if there's 3 cards on board
 		card.scripts = {"manual": {
 				"hand": [
@@ -157,8 +157,8 @@ class TestFilterPerBoardseek:
 					"subject": "boardseek",
 					"subject_count": "all",
 					"filter_card_count": 3,}}}
-		card.execute_scripts()
-		await yield_for(0.3).YIELD
+		await card.execute_scripts()
+		await yield_for(0.3)
 		assert_true(card.is_faceup,
 				"Card stayed face-up since filter_per_boardseek didn't match")
 		# Flip the card facedown if there's 4 cards on board
@@ -171,8 +171,8 @@ class TestFilterPerBoardseek:
 					"subject": "boardseek",
 					"subject_count": "all",
 					"filter_card_count": 4,}}}
-		card.execute_scripts()
-		await yield_for(0.3).YIELD
+		await card.execute_scripts()
+		await yield_for(0.3)
 		assert_false(card.is_faceup,
 				"Card flipped face-down since filter_per_boardseek matched")
 
@@ -192,8 +192,8 @@ class TestFilterPerTutor:
 					"comparison": "lt",
 					"src_container": "deck",
 					"filter_card_count": 5,}}}
-		card.execute_scripts()
-		await yield_for(0.3).YIELD
+		await card.execute_scripts()
+		await yield_for(0.3)
 		assert_true(card.is_faceup,
 				"Card stayed face-up since filter_per_tutor didn't match")
 		# Flip the card facedown if there's more than 5 cards in deck
@@ -208,8 +208,8 @@ class TestFilterPerTutor:
 					"comparison": "gt",
 					"src_container": "deck",
 					"filter_card_count": 5,}}}
-		card.execute_scripts()
-		await yield_for(0.3).YIELD
+		await card.execute_scripts()
+		await yield_for(0.3)
 		assert_false(card.is_faceup,
 				"Card flipped face-down since filter_per_tutor matched")
 
@@ -226,8 +226,8 @@ class TestFilterPerTutor:
 					"src_container": "hand",
 					"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}],
 					"filter_card_count": 1,}}}
-		card.execute_scripts()
-		await yield_for(0.3).YIELD
+		await card.execute_scripts()
+		await yield_for(0.3)
 		assert_true(card.is_faceup,
 				"Card stayed face-up since filter_per_tutor didn't match")
 		# Flip the card facedown if there's 3 or more blue cards in hand
@@ -243,8 +243,8 @@ class TestFilterPerTutor:
 					"comparison": "ge",
 					"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}],
 					"filter_card_count": 2,}}}
-		card.execute_scripts()
-		await yield_for(0.3).YIELD
+		await card.execute_scripts()
+		await yield_for(0.3)
 		assert_false(card.is_faceup,
 				"Card flipped face-down since filter_per_tutor matched")
 
@@ -273,7 +273,7 @@ class TestPerPrevious:
 				},
 			]}
 		}
-		await execute_with_target(card,target).completed
+		await execute_with_target(card,target)
 		assert_eq(5,board.counters.get_counter("research"),
 				"Counter set to the specified amount")
 
@@ -296,8 +296,8 @@ class TestPerInverted:
 				},
 			]}
 		}
-		card.execute_scripts()
-		await yield_for(0.1).YIELD
+		await card.execute_scripts()
+		await yield_for(0.1)
 		assert_eq(board.counters.get_counter("credits"),7,
 				"Counter set to the specified amount")
 	#
@@ -307,7 +307,7 @@ class TestFilterPerUnique:
 
 	func test_filter_per_count_unique():
 		# Put one bio counter per unique card in deck
-		await table_move(card, Vector2(100,200)).completed
+		await table_move(card, Vector2(100,200))
 		card.scripts = {"manual": {
 			"board": [
 				{
@@ -323,7 +323,7 @@ class TestFilterPerUnique:
 				},
 			]
 		}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		var bio_token = card.tokens.get_token("bio")
 		assert_not_null(bio_token,
 			"Put 1 Bio token per unique card in deck")
@@ -353,11 +353,11 @@ class TestModifyPropertiesPer:
 				},
 			]}
 		}
-		card.execute_scripts()
-		await yield_for(0.5).YIELD
-		assert_eq(card.get_property("Power"), 3,
+		await card.execute_scripts()
+		await yield_for(0.5)
+		assert_eq(await card.get_property("Power"), 3,
 			"Power set equal to research")
-		assert_eq(card.get_property("Cost"), 5,
+		assert_eq(await card.get_property("Cost"), 5,
 			"Cost increased by the amount of research")
 
 
@@ -365,9 +365,9 @@ class TestOriginalPrevious:
 	extends "res://tests/ScEng_common.gd"
 
 	func test_original_previous():
-		await table_move(card, Vector2(100,200)).completed
-		await table_move(target, Vector2(300,200)).completed
-		await yield_for(0.1).YIELD
+		await table_move(card, Vector2(100,200))
+		await table_move(target, Vector2(300,200))
+		await yield_for(0.1)
 		card.scripts = {"manual": {
 			"board": [
 				{
@@ -388,7 +388,7 @@ class TestOriginalPrevious:
 					},
 			]}
 		}
-		await execute_with_target(card,target).completed
+		await execute_with_target(card,target)
 	# warning-ignore:unused_variable
 		var bio_token_card = card.tokens.get_token("bio")
 		var bio_token_target = target.tokens.get_token("bio")

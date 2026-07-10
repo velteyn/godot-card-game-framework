@@ -11,7 +11,7 @@ const _CARD_SELECT_SCENE = preload(_CARD_SELECT_SCENE_FILE)
 
 # Populates the info panels under the card, when it is shown in the
 # viewport focus or deckbuilder
-func populate_info_panels(card: Card, focus_info: DetailPanels) -> void:
+func populate_info_panels(card: Card, focus_info: DetailPanels):
 	focus_info.hide_all_info()
 	var card_illustration = await card.get_property("_illustration")
 	if card_illustration:

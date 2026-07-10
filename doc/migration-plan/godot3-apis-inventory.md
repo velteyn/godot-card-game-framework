@@ -86,15 +86,33 @@ This file catalogs every Godot 3.x-specific API usage pattern found in the codeb
 | `get_tree().change_scene()` | Potential in MainMenu | `change_scene_to_file()` |
 | `Thread.start(self, method, [args])` | GameStats.gd | `Thread.start(method.bind(args))` |
 
-## GUT v7.3.0-specific
+## GUT v7.3.0 → v9.7.0
 
-| Godot 3 GUT | Godot 4 GUT |
+| Godot 3 GUT (v7.3.0) | Godot 4 GUT (v9.7.0) |
 |-------------|-------------|
-| `yield_to()` / `yield_for()` | Use `await` with GUT 4 equivalents |
+| `yield_to()` / `yield_for()` | `wait_seconds()` / `wait_frames()` |
 | `autoqfree()` | `add_child_autofree()` |
-| `assert_connected()` | May differ |
-| `assert_freed()` | May differ |
-| `assert_string_contains()` | May differ |
-| Whole addon | Must be replaced |
-| `input_factory.gd` API (scancode) | Must be updated |
+| `assert_connected()` | `assert_signal_emitted()` or `assert_connected()` (different sig) |
+| `assert_freed()` | Removed |
+| `assert_string_contains()` | Removed |
+| Whole addon | Replaced entirely |
+| `input_factory.gd` API (scancode) | Removed (use `InputEvent` directly) |
 | Editor plugin registration | Different API |
+| CLI: `gut_cmdln.gd -gdir ...` | Same but with `--headless` flag |
+
+## New Godot 4 API Patterns Discovered
+
+| Pattern | Files | Godot 4 Rule |
+|---------|-------|-------------|
+| `Button.pressed` (bool read) | CGFBoard.gd, CardViewer.gd | `Button.button_pressed` (`.pressed` is now the signal object) |
+| Property getter reads own property | CardTemplate.gd | Use `_backing_var` in getter/setter to avoid recursion |
+| `_ready()` without `super()` | Pile.gd, Hand.gd, CGFDeck.gd, CGFDiscard.gd, CGFHand.gd | Must call `super()` or parent init is skipped |
+| `Window.size` is `Vector2i` | AskInteger.gd | Convert to `Vector2i` arithmetic when mixing with `Vector2` |
+| `connect()` with duplicate callable | IntegerLineEdit.gd, AskInteger.gd | Use `is_connected()` guard or error at runtime |
+| `popup_hide` signal | test_AskInteger_scene.gd | Removed from AcceptDialog/Window in Godot 4 |
+| `Window.reset_min_size()` | Pile.gd | Use `reset_size()` for Window-based nodes |
+| `Node.name` auto-renames siblings | Tests checking `card.name` | Check `canonical_name` instead; Node auto-suffixes duplicate sibling names |
+| `RichTextLabel.append_text()` ≠ `.text` | CardFront.gd:_assign_bbcode_text | `append_text()` does NOT set `.text` property; use `rtlabel.text = formatted` |
+| `move_to()` board code runs on pile/hand | CardTemplate.gd:move_to | Board-drop code (line 1334 `move_child` to last) ran unconditionally; wrapped in `else` |
+| `has_node('Gut')` not matching | CGFBoard.gd | GUT v9.7.0 root node is `GutRunner`, not `Gut`; use `cfc.is_testing` |
+| `wait_seconds` vs `process_frame` order | Test timing | `SceneTreeTimer` fires before `process_frame` in the same frame cycle |

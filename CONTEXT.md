@@ -149,9 +149,66 @@ themes/                 ← Dark theme
    - `rect_*` → direct properties on Control
    - `modulate[3]` → `.a`
 4. **Fix scenes/resources** — Re-save in Godot 4 format
-5. **Update GUT** — Replace Godot 3 addon with Godot 4 GUT version
+5. **Update GUT** — Replace Godot 3 addon with Godot 4 GUT version (9.7.0)
 6. **Fix tests** — Update test code for GUT 4 API + GDScript 2.0
 7. **Verify** — Run full test suite, manual visual checks
+
+## Migration Progress
+
+### Phase 1 (Automated Conversion) — ✅ Completed
+- Validated and converted via `--convert-3to4` tool
+- All scenes/resources saved in Godot 4 format
+
+### Phase 2 (Manual GDScript Fixes) — ✅ Completed
+- `yield` → `await` throughout all `.gd` files
+- `export`/`onready`/`tool` → `@export`/`@onready`/`@tool`
+- `setget` → inline setter/getter blocks (fixed ~15 files)
+- `.instance()` → `.instantiate()`
+- Signal connections → callables throughout
+- `Pool*Array` → `Packed*Array`
+- File/Directory → FileAccess/DirAccess
+- `BUTTON_LEFT` → `MOUSE_BUTTON_LEFT`
+- `scancode` → `keycode`
+- Tween nodes → `create_tween()` API throughout
+- `rect_*` → direct properties on Control
+- `modulate[3]` → `.a`
+
+### Phase 3 (Scenes & Resources) — ✅ Completed
+- All `.tscn`/`.tres` files saved in Godot 4 format
+- Theme/style paths updated where needed
+
+### Phase 4 (GUT Testing Framework) — ✅ Completed
+- Replaced Godot 3 GUT v7.3.0 with Godot 4 GUT v9.7.0
+- Updated `_ready()` chains to call `super()` in Pile, Hand, CGFDeck, CGFDiscard, CGFHand
+- Fixed all Godot 4 API regressions in test utilities
+- GUT CLI: `godot47 --headless -s res://addons/gut/gut_cmdln.gd --path . -gdir <dirs> -ginclude_subdirs -gexit`
+
+### Phase 5 (Project Settings) — ✅ Completed
+- Removed `_global_script_classes` and `_global_script_class_icons`
+- Updated input map (`scancode` → `keycode`)
+- Removed old `[editor_plugins]`
+
+### Phase 6 (Verification) — 🔶 In Progress
+- Project loads in headless mode without compilation errors
+- All 6 unit test files pass: `test_card_class.gd` (10/10), `test_AskInteger_scene.gd` (3/3), `test_OptionalConfirmation_scene.gd` (5/5), `test_DeckBuilder.gd` (2/2), `test_token_class.gd` (6/6)
+- Remaining pre-existing failures: `test_cardcontainer_class.gd` (2/5, 3 failing — auto-renaming), `test_pile_class.gd` (3/6, 3 failing — auto-renaming + popup ordering)
+- Integration tests (`test_piles.gd`) still failing (pre-existing migration issues: Tween nulls, signal conversion errors)
+- Key fixes in this session: `move_to` board-drop code containment, `CGFBoard.gd` GUT detection, `test_init_card_name` canonical_name check
+
+### Key Bugs Discovered During Migration
+
+1. **`Button.pressed` returns signal object, not bool**: In Godot 4, `Button.pressed` returns the signal object. Use `Button.button_pressed` for the boolean property. This corrupted the settings file when serialized.
+2. **Property getter/setter recursion**: Godot 4 property getters/setters always go through themselves from within the class. Direct backing variables (`_card_name`, `_card_rotation`, etc.) needed where getter returns a function that reads the same property.
+3. **`_ready()` super() chaining**: Godot 4 does NOT auto-call parent `_ready()`. Custom `_ready()` methods that override must call `super()`, or the parent's initialization (including `cfc.map_node(self)` in `CardContainer`) never runs.
+4. **`Window.size` is `Vector2i`**: In Godot 4, `Window.size` returns `Vector2i`, not `Vector2`. Mixing with `Vector2` operands causes type errors.
+5. **`connect()` errors on duplicate**: Godot 4's `connect()` raises an error if the same callable is already connected. Must use `is_connected()` guard when `_ready()` can be called multiple times (e.g., re-parenting).
+6. **`popup_hide` signal removed**: `AcceptDialog`/`Window` no longer has `popup_hide` in Godot 4. Use `close_requested` or `visibility_changed` instead.
+7. **`reset_min_size()` → `reset_size()`**: `PopupPanel` (Window-based) has `reset_size()`, not `reset_min_size()`.
+8. **`Node.name` auto-renames sibling duplicates**: Godot 4 silently appends a suffix (e.g., "Test Card 2" → "Test Card 6") when multiple siblings share a name. `canonical_name` is unaffected. Found in tests checking `card.name`.
+9. **`move_to()` board-drop code leaked into pile/hand moves**: The `get_parent().move_child(self, get_parent().get_child_count() - 1)` at line 1334 of `CardTemplate.gd` ran unconditionally, undoing any custom index placement for pile moves. Fixed by wrapping in an `else` clause.
+10. **`CGFBoard.gd` GUT detection**: The guard `has_node('Gut')` never matched because GUT v9.7.0's root node is `GutRunner`. Changed to `cfc.is_testing`.
+11. **`RichTextLabel.append_text()` doesn't set `.text`**: In Godot 4, `append_text()` does NOT update the `text` property (unlike Godot 3's `append_bbcode()`). Fixed in `CardFront.gd:_assign_bbcode_text`.
+12. **`wait_seconds` fires before `process_frame`**: `SceneTreeTimer` resolves before `process_frame` in the same frame cycle, affecting test timing assumptions.
 
 ## Key Conversion Challenges
 

@@ -25,12 +25,12 @@ static func load_all_decks() -> Array:
 		var file = FileAccess.open(CFConst.DECKS_PATH + deck, FileAccess.READ)
 		var test_json_conv = JSON.new()
 		test_json_conv.parse(file.get_as_text())
-		var data = test_json_conv.get_data()
+		var data = test_json_conv.data
 		file.close()
 		# We expect decks in JSON Dictionary format
 		# In the future we might support plaintext as well.
-		if typeof(data.result) == TYPE_DICTIONARY:
-			loaded_decks_list.append(data.result)
+		if typeof(data) == TYPE_DICTIONARY:
+			loaded_decks_list.append(data)
 	return(loaded_decks_list)
 
 

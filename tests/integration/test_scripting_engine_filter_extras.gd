@@ -18,7 +18,7 @@ class TestFailCostOnSkip:
 				"modification": 5,
 				"counter_name":  "research"}
 				]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("credits"),100,
 				"Counter set to the specified amount")
 		assert_eq(board.counters.get_counter("research"),5,
@@ -40,7 +40,7 @@ class TestFailCostOnSkip:
 				"modification": 5,
 				"counter_name":  "research"}
 				]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(board.counters.get_counter("credits"),100,
 				"Counter set to the specified amount")
 		assert_eq(board.counters.get_counter("research"),0,
@@ -90,7 +90,7 @@ class TestFilterStringNumberProperty:
 					]
 				},
 			]}}
-		card.execute_scripts()
+		await card.execute_scripts()
 		assert_eq(card_to_modify.properties.Cost,4,
 				"Card to modify set to correct amount")
 		for c in hand.get_all_cards():

@@ -300,13 +300,12 @@ static func get_unique_values(property: String) -> Array:
 # (which you get with `preload()`)
 # into an ImageTexture you can assign to a node's texture property.
 static func convert_texture_to_image(texture, is_lossless = false) -> ImageTexture:
-	var tex: CompressedTexture2D
+	var tex: Texture2D
 	if typeof(texture) == TYPE_STRING:
 		tex = load(texture)
 	else:
-#		print_debug(texture)
 		tex = texture
-	var new_texture = ImageTexture.new();
-	var image = tex.get_data()
+	var new_texture = ImageTexture.new()
+	var image = tex.get_image()
 	new_texture.create_from_image(image)
 	return(new_texture)

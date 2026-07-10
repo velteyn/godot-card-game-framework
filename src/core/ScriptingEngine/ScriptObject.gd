@@ -396,7 +396,7 @@ func sort_subjects(subject_list: Array) -> Array:
 #
 # This allows us for example to filter cards sought based on the properties
 # of the card running the script.
-func parse_replacements() -> void:
+func parse_replacements():
 	# We need a deep copy because of all the nested dictionaries
 	var wip_definitions := script_definition.duplicate(true)
 	for key in wip_definitions:

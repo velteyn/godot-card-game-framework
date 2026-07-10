@@ -16,7 +16,6 @@ func before_each():
 		"Type": "Green"
 	}
 #	var confirm_return = setup_board()
-#	if confirm_return is GDScriptFunctionState: # Still working.
 #		confirm_return = yield(confirm_return, "completed")
 
 func test_init() -> void:

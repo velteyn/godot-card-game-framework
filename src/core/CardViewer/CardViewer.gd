@@ -164,7 +164,7 @@ func _apply_filters(active_filters: Array) -> void:
 		for property in filter_button_properties:
 			var active_button_values = []
 			for button in _filter_buttons.get_children():
-				if button as CVFilterButton\
+				if button is CVFilterButton\
 						and button.button_pressed\
 						and button.property == property:
 					active_button_values.append(button.value)
@@ -193,8 +193,8 @@ func _check_custom_filters(_card_object: CVListCardObject) -> bool:
 # Simply calls _apply_filters()
 func _on_ShowAll_button_pressed() -> void:
 	for button in _filter_buttons.get_children():
-		if button as CVFilterButton\
-				and not button.pressed:
+		if button is CVFilterButton\
+				and not button.button_pressed:
 			button.button_pressed = true
 	_apply_filters(_filter_line.get_active_filters())
 
@@ -205,7 +205,7 @@ func _on_filter_button_pressed() -> void:
 # Simply calls _apply_filters()
 func _on_filter_button_right_pressed(filter_button: CVFilterButton) -> void:
 	for button in _filter_buttons.get_children():
-		if button as CVFilterButton\
+		if button is CVFilterButton\
 				and button.button_pressed\
 				and button != filter_button:
 			button.button_pressed = false

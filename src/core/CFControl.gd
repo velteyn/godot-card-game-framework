@@ -310,7 +310,7 @@ func init_settings_from_file() -> void:
 		var file = FileAccess.open(CFConst.SETTINGS_FILENAME, FileAccess.READ)
 		var test_json_conv = JSON.new()
 		test_json_conv.parse(file.get_as_text())
-		var data = test_json_conv.get_data()
+		var data = test_json_conv.data
 		file.close()
 		if typeof(data) == TYPE_DICTIONARY:
 			game_settings = data.duplicate()
@@ -344,7 +344,7 @@ func init_font_cache() -> void:
 		var file = FileAccess.open(CFConst.FONT_SIZE_CACHE, FileAccess.READ)
 		var test_json_conv = JSON.new()
 		test_json_conv.parse(file.get_as_text())
-		var data = test_json_conv.get_data()
+		var data = test_json_conv.data
 		file.close()
 		if typeof(data) == TYPE_DICTIONARY:
 			if font_size_cache.get('version') == CFConst.GAME_VERSION:
