@@ -122,3 +122,9 @@ This file catalogs every Godot 3.x-specific API usage pattern found in the codeb
 | Signal `bind()` + typed function params | Pile.gd | `bind()` appends args after signal args; typed first param causes type coercion error |
 | Control `layout_mode` anchor conflicts | Pile.gd | Default `layout_mode=1`; direct `position`/`size` triggers anchor warnings; set `layout_mode=0` |
 | Godot 3 Tween nodes → orphaned overrides | UTBoard.tscn | Inherited scenes with `[node name="Tween"]` overrides cause "vanished" warnings after Tween removal |
+| `tween_all_completed` signal removed | 24 test files (247 occurrences) | Godot 4 Tween uses `finished` signal, not `tween_all_completed` |
+| `InputEvent.meta` property removed | UTcommon.gd | Godot 4 `InputEventMouseButton` has no `.meta`; remove unused assignment |
+| `PopupPanel` has no `modulate` | test_piles.gd | Window-based PopupPanel lacks `modulate`; use `.visible` for visibility check |
+| `card.get_node('Tween')` removes Tween node | 5 test files | Godot 3 Tween child nodes removed; use `card._tween` (member var from `create_tween()`) |
+| `PropertyTweener.from()` returns null | CardTemplate.gd, Pile.gd | Returns null when parent Tween already started; capture and guard |
+| `yield_to` on null tween | UTcommon.gd | GUT crashes on null object with `"get_signal_list in null instance"` |

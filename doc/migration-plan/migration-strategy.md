@@ -143,7 +143,7 @@
 | `test_OptionalConfirmation_scene.gd` | ✅ 5/5 passing | |
 | `test_DeckBuilder.gd` | ✅ 2/2 passing | |
 | `test_token_class.gd` | ✅ 6/6 passing | |
-| Integration tests | ❌ Mostly failing | Pre-existing Tween/signal migration issues |
+| Integration tests (30+ files) | 🔶 Partially fixed | 247 tween signal fixes, from() guards, get_node('Tween') fixes applied. Remaining: card drag/drop state machine, started tween errors, timeouts |
 
 ## Key Godot 4 Pitfalls Discovered
 
@@ -200,6 +200,24 @@ Controls default to `layout_mode = 1` (anchors mode). Direct `position`/`size` a
 
 ### Godot 3 Tween nodes → orphaned scene overrides
 Inherited scenes that overrode removed Tween nodes produce "node was modified from inside an instance, but it has vanished" warnings. Remove orphaned `[node name="Tween"]` entries.
+
+### tween_all_completed signal removed
+Godot 4 Tween uses `finished` signal, not `tween_all_completed`. Bulk rename was needed across 247 occurrences in 24 test files.
+
+### InputEvent.meta property removed
+Godot 4 `InputEventMouseButton` no longer has `.meta` for storing meta-key state. Remove assignments like `ev.meta = flags`.
+
+### PopupPanel (Window) has no modulate
+`PopupPanel` extends `Window`, losing `modulate`. Use `.visible` for visibility checks instead of `modulate[3]`.
+
+### Godot 3 Tween child node references removed
+`card.get_node('Tween')` fails because Tween scene nodes were removed. Use `card._tween` (member from `create_tween()`).
+
+### PropertyTweener.from() returns null on started tweens
+When a Tween is already running, `.from()` on a new `PropertyTweener` returns null with `"Condition 'started' is true"`. Capture the `tween_property()` return and guard `.from()`.
+
+### yield_to on null tween crashes GUT
+GUT's `yield_to(null_tween, "finished", 1)` raises `"get_signal_list in null instance"`. Guard with `if tween and tween.is_valid()`.
 
 ## Risks & Considerations
 

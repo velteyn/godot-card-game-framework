@@ -191,8 +191,8 @@ themes/                 ← Dark theme
 ### Phase 6 (Verification) — 🔶 In Progress
 - Project loads in headless mode without compilation errors
 - All 8 unit test files pass: `test_card_class.gd` (10/10), `test_cardcontainer_class.gd` (5/5), `test_pile_class.gd` (6/6), `test_AskInteger_scene.gd` (3/3), `test_OptionalConfirmation_scene.gd` (5/5), `test_DeckBuilder.gd` (2/2), `test_token_class.gd` (6/6)
-- Integration tests still failing (pre-existing migration issues: Tween nulls, signal conversion errors)
-- Key fixes: `move_to` board-drop containment, `CGFBoard.gd` GUT detection, canonical_name check, child index adjustments, popup card return, tween signal name, shuffle signal lambda, anchor warning fix
+- Integration tests partially fixed: 247 `tween_all_completed`→`finished` replacements, `.get_node('Tween')`→`._tween` fixes, `.from()` null guards, `ev.meta` removal, `mouse_pointer` null guard
+- Remaining integration failures: card drag/drop state machine (cards stuck at scene position), lingering "started" tween errors, some deadlocks (timeouts)
 
 ### Key Bugs Discovered During Migration
 
@@ -220,6 +220,20 @@ themes/                 ← Dark theme
 17. **Control `layout_mode` anchor conflicts**: In Godot 4, Controls default to `layout_mode = 1` (anchors mode). Direct `position`/`size` assignments trigger `"Nodes with non-equal opposite anchors will have their size overridden"` warnings. For Controls parented under Area2D (like the Pile's Panel), set `layout_mode = 0` before direct manipulation.
 
 18. **Godot 3 Tween nodes removed from scenes**: The Godot 3 Pile.tscn included `Tween` child nodes. During migration these were removed (Godot 4 uses `create_tween()`). Custom scenes like UTBoard.tscn had overrides referencing these removed nodes, causing `"node was modified from inside an instance, but it has vanished"` warnings. Fix: remove orphaned Tween node overrides from inherited scenes.
+
+19. **`tween_all_completed` signal → `finished`**: Godot 4 Tween no longer has `tween_all_completed`. Use `finished` signal instead. Found in 247 occurrences across 24 test files (all integration tests).
+
+20. **`InputEvent.meta` property removed**: Godot 4 `InputEvent`/`InputEventMouseButton` doesn't have `.meta` for storing meta-key state. The `fake_click` helper in UTcommon.gd assigned `ev.meta = flags` which fails. Fix: remove the line since it was unused.
+
+21. **`PopupPanel` has no `modulate`**: In Godot 4, `PopupPanel` extends `Window` (not `Control`→`CanvasItem`), so it lacks `modulate`. Tests reading `ViewPopup.modulate[3]` for visibility checks must use `ViewPopup.visible` instead.
+
+22. **Godot 3 `Tween` child node references in tests**: Many test files used `card.get_node('Tween')` / `.get_node("Tween")` to reference Tween child nodes that don't exist in Godot 4. These must be changed to `card._tween` (the tween created by `create_tween()` and stored as a member).
+
+23. **`PropertyTweener.from()` returns null on started tweens**: In Godot 4, calling `.from()` on a `PropertyTweener` whose parent Tween has already started processing returns null with `"Condition 'started' is true"`. Fix: store the PropertyTweener returned by `tween_property()` and only call `.from()` if non-null.
+
+24. **`yield_to` on null tween crashes GUT**: When GUT's `yield_to(object, signal, timeout)` is called with a null `object`, it triggers `"get_signal_list in null instance"`. All `yield_to` calls on `card._tween` must be guarded with `if card._tween and card._tween.is_valid()`.
+
+25. **Card drag/drop state machine not completing**: Integration tests show cards stuck at `Vector2(-75, 0)` (scene default position) after drag/drop. The card's `_on_Card_gui_input` / `move_to` / state transitions don't complete correctly in Godot 4. Root cause still under investigation.
 
 ## Key Conversion Challenges
 

@@ -113,6 +113,43 @@ Found in: `Pile.gd:reorganize_stack` — `$Control.size` and `$Control.position`
 ### Godot 3 Tween nodes leave orphaned scene overrides
 The Godot 3 Pile.tscn included `Tween` child nodes for animation. During migration these were removed (Godot 4 uses `create_tween()`). Inherited scenes like UTBoard.tscn that overrode those specific Tween nodes now produce warnings: `"node was modified from inside an instance, but it has vanished"`. Fix: remove orphaned `[node name="Tween" ...]` entries from inheriting scenes.
 
+### tween_all_completed signal removed
+Godot 4 Tween uses `finished` signal, not `tween_all_completed`. Found in 247 occurrences across 24 integration test files. Fix: bulk rename `"tween_all_completed"` → `"finished"`.
+
+### InputEvent.meta property removed
+Godot 4 `InputEventMouseButton` no longer has `.meta` property. Test utils assigning `ev.meta = flags` fail with `"Invalid assignment of property or key 'meta'"`. Remove the line; the flags parameter was unused.
+
+Found in: `tests/UTcommon.gd:fake_click`
+
+### PopupPanel (Window) has no modulate
+In Godot 4, `PopupPanel` extends `Window` (Viewport→Node), not `Control`→`CanvasItem`. It lacks `modulate`. Tests using `ViewPopup.modulate[3]` for visibility must use `ViewPopup.visible` instead.
+
+Found in: `tests/integration/test_piles.gd:93`
+
+### Godot 3 Tween child node references removed
+Tests using `card.get_node('Tween')` / `.get_node("Tween")` to access Tween child nodes fail because Godot 4 removed Tween scene nodes (using `create_tween()` instead). Replace with `card._tween`.
+
+Found in: `test_piles.gd`, `test_attachments.gd`, `test_reshuffle_all.gd`, `test_scripting_engine_general.gd`, `test_tokens.gd`
+
+### PropertyTweener.from() returns null on started tweens
+When a Tween has already started processing, calling `.from()` on a `PropertyTweener` returns null with `"Condition 'started' is true"`. Guard pattern:
+
+```gdscript
+# Unsafe (chains on null):
+_tween.tween_property(self, 'pos', tgt, 0.3).from(expected).set_trans(T)
+
+# Safe:
+var tw = _tween.tween_property(self, 'pos', tgt, 0.3)
+if tw: tw.from(expected).set_trans(T).set_ease(E)
+```
+
+Found in: `CardTemplate.gd` (_add_tween_*), `Pile.gd` (_add_tween_*)
+
+### yield_to on null tween crashes GUT
+GUT's `yield_to(object, signal, timeout)` raises `"get_signal_list in null instance"` when object is null. Guard with `if card._tween and card._tween.is_valid(): yield_to(...)`.
+
+Found in: `UTcommon.gd:drop_card`, `UTcommon.gd:table_move`
+
 ## Documentation Links
 
 - Godot 3 to 4 migration: https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.html
