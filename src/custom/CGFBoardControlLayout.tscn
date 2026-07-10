@@ -10,7 +10,7 @@
 [ext_resource path="res://src/custom/CGFModifiedLabelGrid.tscn" type="PackedScene" id=8]
 [ext_resource path="res://fonts/comfortaa/Comfortaa-Bold.ttf" type="FontFile" id=9]
 [ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=10]
-[ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=12]
+[ext_resource path="res://themes/darktheme/darktheme.tres" type="Theme" id=12]
 
 [sub_resource type="FontFile" id=1]
 size = 14

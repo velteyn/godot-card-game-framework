@@ -1,0 +1,98 @@
+[gd_resource type="Theme" load_steps=16 format=3]
+
+[ext_resource type="StyleBox" path="res://themes/darktheme/StyleBox/Normal.tres" id="1"]
+[ext_resource type="StyleBox" path="res://themes/darktheme/StyleBox/Hover.tres" id="2"]
+[ext_resource type="StyleBox" path="res://themes/darktheme/StyleBox/Pressed.tres" id="3"]
+[ext_resource type="StyleBox" path="res://themes/darktheme/StyleBox/Disabled.tres" id="4"]
+
+[ext_resource type="Texture2D" path="res://themes/darktheme/Icons/CheckedBox.png" id="5"]
+[ext_resource type="Texture2D" path="res://themes/darktheme/Icons/UnCheckedBox.png" id="6"]
+[ext_resource type="Texture2D" path="res://themes/darktheme/Icons/CheckedButton.png" id="7"]
+[ext_resource type="Texture2D" path="res://themes/darktheme/Icons/UnCheckButton.png" id="8"]
+[ext_resource type="Texture2D" path="res://themes/darktheme/Icons/CheckedButtonDis.png" id="9"]
+[ext_resource type="Texture2D" path="res://themes/darktheme/Icons/UnCheckButtonDis.png" id="10"]
+[ext_resource type="Texture2D" path="res://themes/darktheme/Icons/Grapper.png" id="11"]
+[ext_resource type="Texture2D" path="res://themes/darktheme/Icons/GrapperHighlight.png" id="12"]
+[ext_resource type="Texture2D" path="res://themes/darktheme/Icons/spinbox.png" id="13"]
+
+[ext_resource type="FontFile" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="14"]
+[ext_resource type="FontFile" path="res://fonts/Xolonium-Regular.ttf" id="15"]
+
+[resource]
+Button/styles/normal = ExtResource(1)
+Button/styles/hover = ExtResource(2)
+Button/styles/pressed = ExtResource(3)
+Button/styles/disabled = ExtResource(4)
+Button/styles/focus = ExtResource(2)
+Button/colors/font_color = Color(0.9, 0.9, 0.9, 1)
+Button/colors/font_focus_color = Color(1, 0.6549, 0.5098, 1)
+Button/colors/font_hover_color = Color(1, 0.6549, 0.5098, 1)
+Button/colors/font_pressed_color = Color(1, 0.5137, 0.3137, 1)
+Button/colors/font_disabled_color = Color(0.4, 0.4, 0.4, 0.5)
+Button/colors/icon_normal_color = Color(1, 1, 1, 1)
+Button/colors/icon_hover_color = Color(1, 0.6549, 0.5098, 1)
+Button/colors/icon_pressed_color = Color(1, 0.5137, 0.3137, 1)
+Button/colors/icon_disabled_color = Color(0.4, 0.4, 0.4, 0.5)
+Button/fonts/font = ExtResource(14)
+Button/font_sizes/font_size = 16
+
+CheckButton/styles/normal = ExtResource(1)
+CheckButton/styles/hover = ExtResource(2)
+CheckButton/styles/pressed = ExtResource(3)
+CheckButton/styles/disabled = ExtResource(4)
+CheckButton/styles/focus = ExtResource(2)
+CheckButton/colors/font_color = Color(0.9, 0.9, 0.9, 1)
+CheckButton/colors/font_focus_color = Color(1, 0.6549, 0.5098, 1)
+CheckButton/colors/font_hover_color = Color(1, 0.6549, 0.5098, 1)
+CheckButton/colors/font_pressed_color = Color(1, 0.5137, 0.3137, 1)
+CheckButton/colors/font_disabled_color = Color(0.4, 0.4, 0.4, 0.5)
+CheckButton/fonts/font = ExtResource(14)
+CheckButton/font_sizes/font_size = 16
+
+CheckBox/styles/normal = ExtResource(1)
+CheckBox/styles/hover = ExtResource(2)
+CheckBox/styles/pressed = ExtResource(3)
+CheckBox/styles/disabled = ExtResource(4)
+CheckBox/styles/focus = ExtResource(2)
+CheckBox/colors/font_color = Color(0.9, 0.9, 0.9, 1)
+CheckBox/icons/checked = ExtResource(5)
+CheckBox/icons/unchecked = ExtResource(6)
+CheckBox/fonts/font = ExtResource(14)
+CheckBox/font_sizes/font_size = 16
+
+OptionButton/styles/normal = ExtResource(1)
+OptionButton/styles/hover = ExtResource(2)
+OptionButton/styles/pressed = ExtResource(3)
+OptionButton/styles/disabled = ExtResource(4)
+OptionButton/styles/focus = ExtResource(2)
+OptionButton/colors/font_color = Color(0.9, 0.9, 0.9, 1)
+OptionButton/fonts/font = ExtResource(14)
+OptionButton/font_sizes/font_size = 16
+
+Label/colors/font_color = Color(0.9, 0.9, 0.9, 1)
+Label/fonts/font = ExtResource(14)
+Label/font_sizes/font_size = 16
+
+PopupMenu/styles/panel = ExtResource(1)
+PopupMenu/colors/font_color = Color(0.9, 0.9, 0.9, 1)
+PopupMenu/colors/font_hover_color = Color(1, 0.6549, 0.5098, 1)
+PopupMenu/fonts/font = ExtResource(14)
+PopupMenu/font_sizes/font_size = 16
+
+Panel/styles/panel = ExtResource(1)
+
+VScrollBar/styles/grabber = ExtResource(11)
+VScrollBar/styles/grabber_highlight = ExtResource(12)
+HScrollBar/styles/grabber = ExtResource(11)
+HScrollBar/styles/grabber_highlight = ExtResource(12)
+
+SpinBox/icons/updown = ExtResource(13)
+
+LineEdit/styles/normal = ExtResource(1)
+LineEdit/styles/focus = ExtResource(2)
+LineEdit/colors/font_color = Color(0.9, 0.9, 0.9, 1)
+LineEdit/fonts/font = ExtResource(14)
+LineEdit/font_sizes/font_size = 16
+
+default_font = ExtResource(14)
+default_font_size = 16

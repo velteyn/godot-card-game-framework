@@ -21,7 +21,7 @@ func _init():
 	var theme = load("res://themes/darktheme/darktheme.theme")
 	if theme:
 		print("Theme loaded: ", theme.resource_path)
-		var err = ResourceSaver.save(theme, "res://themes/darktheme/darktheme.theme")
+		var err = ResourceSaver.save(theme, "res://themes/darktheme/darktheme.tres")
 		print("Theme re-save: ", err)
 	else:
 		print("Theme not loaded")

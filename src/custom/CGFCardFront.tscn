@@ -2,7 +2,7 @@
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="FontFile" id=1]
 [ext_resource path="res://src/custom/CGFCardFront.gd" type="Script" id=2]
-[ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=3]
+[ext_resource path="res://themes/darktheme/darktheme.tres" type="Theme" id=3]
 [ext_resource path="res://assets/icons/fist.png" type="Texture2D" id=4]
 [ext_resource path="res://assets/icons/rupee.png" type="Texture2D" id=5]
 

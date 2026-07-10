@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=1]
+[ext_resource path="res://themes/darktheme/darktheme.tres" type="Theme" id=1]
 [ext_resource path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" type="FontFile" id=2]
 [ext_resource path="res://src/custom/MainMenu.gd" type="Script" id=3]
 [ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=4]
