@@ -2329,6 +2329,8 @@ func _process_card_state():
 		CardState.MOVING_TO_CONTAINER:
 			# Used when moving card between places
 			# (i.e. deck to hand, hand to discard etc)
+			if state_finalized:
+				return
 			z_index = 0
 			set_focus(false)
 			set_control_mouse_filters(false)
@@ -2401,6 +2403,7 @@ func _process_card_state():
 				if _tween and _tween.is_running():
 					await _tween.finished
 					_determine_idle_state()
+				state_finalized = true
 				_fancy_move_second_part = false
 
 		CardState.REORGANIZING:
