@@ -18,6 +18,12 @@ var hand: Hand
 var deck: Pile
 var discard: Pile
 
+func before_all():
+	cfc.game_settings.fancy_movement = false
+
+func after_all():
+	cfc.game_settings.fancy_movement = true
+
 func fake_click(pressed, position, flags=0) -> InputEvent:
 	var ev := InputEventMouseButton.new()
 	ev.button_index=MOUSE_BUTTON_LEFT
@@ -29,6 +35,7 @@ func fake_click(pressed, position, flags=0) -> InputEvent:
 func setup_main():
 	cfc.is_testing = true
 	cfc._setup()
+	cfc.ut = true
 	main = autoqfree(MAIN_SCENE.instantiate())
 	get_tree().get_root().add_child(main)
 	if not cfc.are_all_nodes_mapped:
@@ -44,6 +51,7 @@ func setup_main():
 func setup_board():
 	cfc.is_testing = true
 	cfc._setup()
+	cfc.ut = true
 	board = add_child_autofree(BOARD_SCENE.instantiate())
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 	if not cfc.are_all_nodes_mapped:
@@ -77,6 +85,10 @@ func draw_test_cards(count: int, fast := true) -> Array:
 	return cards
 
 func click_card(card: Card, _use_fake_mouse := true, offset:=Vector2(0,0)) -> void:
+	# Godot 4 headless: Area2D overlap detection may not trigger mouse_entered.
+	# Force the card into the correct focused state before sending the click.
+	if card.state == Card.CardState.IN_HAND:
+		card.state = Card.CardState.FOCUSED_IN_HAND
 	var fc:= fake_click(true, offset)
 	card._on_Card_gui_input(fc)
 

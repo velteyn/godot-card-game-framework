@@ -59,6 +59,7 @@ func _process(_delta: float) -> void:
 # discover_focus()
 func _on_MousePointer_area_entered(area: Area2D) -> void:
 	if not is_disabled:
+		_overlap_count = 0
 		# We add an extra check in case that the card was not cleared from overlaps 
 		# through the _on_MousePointer_area_exited function 
 		# (sometimes it happens. Haven't figured out what causes it)
