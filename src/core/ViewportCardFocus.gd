@@ -23,7 +23,8 @@ func _ready():
 	world_environemt.environment.glow_enabled = cfc.game_settings.get('glow_enabled', true)
 	# We use the below while to wait until all the nodes we need have been mapped
 	# "hand" should be one of them.
-	$SubViewportContainer/SubViewport.add_child(board_scene.instantiate())
+	if board_scene:
+		$SubViewportContainer/SubViewport.add_child(board_scene.instantiate())
 	if not cfc.are_all_nodes_mapped:
 		await cfc.all_nodes_mapped
 	# warning-ignore:return_value_discarded
