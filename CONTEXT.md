@@ -241,6 +241,22 @@ themes/                 ← Dark theme
 
 28. **Card `global_position` stale after `move_to`**: The `move_to()` function changes the card's parent (e.g., from hand to pile) and restores `global_position = previous_pos` at line 1226. The MOVING_TO_CONTAINER state handler then creates a tween to `_target_position` (the pile's stack position). The tween completes and `_determine_idle_state()` runs, but the card's `global_position` remains at the old hand coordinates. This may be a Godot 4 coordinate-system difference in how `global_position` is computed after reparenting + tween. Needs editor-mode visual debugging to trace the transform chain.
 
+29. **`get_tree()` not available on `RefCounted`**: `GameStats.gd` extends `RefCounted` but calls `await get_tree().process_frame` in the HTML5/Web branch. `RefCounted` has no `get_tree()` method. Fix: use `Engine.get_main_loop().process_frame` which returns the `SceneTree` via the main loop reference.
+
+30. **Godot 3 binary `.theme` files incompatible**: The `darktheme.theme` file was a Godot 3 binary resource (header `RSRC`). Godot 4 cannot load binary theme resources; `.theme` files must be text-based (`format=3`, `type="Theme"`). Fix: recreated `darktheme.tres` from scratch using the existing `StyleBox/*.tres` assets and icon PNGs, covering Button, CheckButton, CheckBox, OptionButton, Label, PopupMenu, Panel, ScrollBar, SpinBox, and LineEdit styles.
+
+31. **`class_name` is a reserved keyword**: In Godot 4, `class_name` is used to declare script class names and cannot be used as a variable name. The `gen_class_cache.gd` tool script used `var class_name = ...`. Fix: renamed variable and rewrote using `ProjectSettings.get_global_class_list()`.
+
+32. **Coroutine functions require `await` on every call**: Godot 4 enforces that every call to a function containing `await` (a coroutine) must itself use `await`. The `Counters.get_counter()` function was a coroutine (internally calls `await get_counter_and_alterants()`), causing parse errors in 11 test files with 47+ call sites. All callers must add `await`. Note: calls through dynamic property chains (e.g., `cfc.NMAP.board.counters.get_counter()`) may escape parse-time detection but will fail at runtime.
+
+33. **Tween auto-delete causes state machine re-entry (MOVING_TO_CONTAINER)**: In Godot 4, `Tween` auto-deletes after finishing (unlike Godot 3 where tweens persisted). The `MOVING_TO_CONTAINER` state handler's guard `if not (_tween and _tween.is_running())` passed every frame because the auto-deleted tween is no longer running, spawning a new position tween each frame and causing cards to drift right endlessly. Fix: added `state_finalized` guard (matching pattern of all other state handlers) that returns early once the transition completes.
+
+34. **GUT 9.x removed `plugin_control.gd`**: GUT v7.3.0 had a `plugin_control.gd` base class for test runner plugins. GUT v9.7.0 removed this. `cli_plugin.gd` in the tests folder extended this non-existent path. Fix: changed `extends` to `Node`.
+
+35. **Font path migration**: The Comfortaa fonts were moved from `res://fonts/` to `res://fonts/comfortaa/` during migration. Scene files (`CGFBoard.tscn`, `CGFBoardControlLayout.tscn`) still referenced the old path. Fix: updated ext_resource paths to `res://fonts/comfortaa/Comfortaa-Bold.ttf`.
+
+36. **`target_card()` coroutine in `yield_to()` wrappers**: The `target_card()` test utility function is a coroutine (uses `await yield_for()`). Calls wrapped in `yield_to(target_card(...), "completed", 0.1)` failed because Godot 4 requires `await` on the coroutine itself, even when used as an argument. Fix: replaced with direct `await target_card(...)`.
+
 ## Key Conversion Challenges
 
 1. **`yield` everywhere** — The codebase relies heavily on `yield` for animation sequencing, async card movement, and test coordination. Every occurrence must be converted to `await`.

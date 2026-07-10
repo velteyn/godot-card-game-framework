@@ -170,3 +170,46 @@ If you override `_ready()` in a child class (especially `CardContainer` → `Pil
 | `EditorPlugin.add_custom_type(...)` | Different signature |
 | `FileDialog.mode` | `FileDialog.file_mode` |
 | `String.right(pos)` | Changed behavior (use `substr()`) |
+
+## Resources & Themes
+
+| Godot 3 | Godot 4 |
+|---------|---------|
+| `DynamicFont` / `DynamicFontData` | `FontFile` (unified type, auto-detected from .ttf/.otf source) |
+| Binary `.theme` files (header `RSRC`) | Text-based `.tres` theme files (`type="Theme"`, `format=3`) |
+| `stylebox_styles` / `custom_styles` | `theme_override_styles/*` |
+| `font_styles` / `custom_fonts` | `theme_override_fonts/*` |
+| `color_styles` / `custom_colors` | `theme_override_colors/*` |
+| `constant_styles` / `custom_constants` | `theme_override_constants/*` |
+| `.res` binary font resources | Use `.ttf`/`.otf` directly with `FontFile` |
+
+## Tween System Changes
+
+| Godot 3 | Godot 4 |
+|---------|---------|
+| `Tween` as child `Node` in scene | `create_tween()` creates unattached Tween object |
+| Tween persists after completion | **Tween auto-deletes** after `finished` signal emits |
+| `tween_all_completed` signal | `finished` signal |
+| `$Tween.interpolate_property(node, prop, from, to, dur)` | `create_tween().tween_property(node, prop, to, dur).from(from)` |
+| `$Tween.start()` | Auto-started (no explicit start call) |
+| State machine guard `if _tween.is_running()` | Add `state_finalized` flag — `is_running()` returns `false` after auto-delete |
+
+## GDScript Reserved Keywords
+
+| Godot 3 | Godot 4 |
+|---------|---------|
+| `class_name` can be a variable name | `class_name` is **reserved** for script class declarations |
+| `get_class()` returns script `class_name` | `get_class()` returns engine-level class only (e.g., `"Area2D"`). Use `is` for type checks |
+
+## Core Object Access
+
+| Godot 3 | Godot 4 |
+|---------|---------|
+| `get_tree()` works on any `Object` | Only available on `Node` subclasses. For `RefCounted`: use `Engine.get_main_loop()` |
+
+## Font Path Conventions
+
+| Godot 3 | Godot 4 |
+|---------|---------|
+| `res://fonts/Comfortaa-Bold.ttf` (flat structure) | Fonts may be moved to subdirectories: `res://fonts/comfortaa/Comfortaa-Bold.ttf` |
+| Ext_resource `type="DynamicFontData"` | Ext_resource `type="FontFile"` (uses same .ttf source file) |
