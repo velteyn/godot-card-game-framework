@@ -3,11 +3,17 @@
 .godot/
 .import/
 *.import
+*.translation
+export_presets.cfg
 export.cfg
 *.TMP
 
 # Mono-specific ignores
 .mono/
+
+# OS-specific
+.DS_Store
+Thumbs.db
 
 # Other
 demo.txt
