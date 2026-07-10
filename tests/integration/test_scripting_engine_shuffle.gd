@@ -12,5 +12,5 @@ class TestShuffle:
 				"counter_name": "research"}]}}
 		await card.execute_scripts()
 		await yield_to(deck, "shuffle_completed", 1.5)
-		assert_eq(2,board.counters.get_counter("research"),
+		assert_eq(2,await board.counters.get_counter("research"),
 				"Counter increased by specified amount")

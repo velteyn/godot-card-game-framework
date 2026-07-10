@@ -374,5 +374,5 @@ class TestCountersCost:
 		await yield_to(card._tween, "finished", 0.5)
 		assert_eq(180,card.card_rotation,
 				"Card not rotated because negative counter cost could not be be paid")
-		assert_eq(1,board.counters.get_counter("research"),
+		assert_eq(1,await board.counters.get_counter("research"),
 				"Token count that could not be paid remains the same")

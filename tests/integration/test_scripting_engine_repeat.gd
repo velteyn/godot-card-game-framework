@@ -10,7 +10,7 @@ class TestRepeat:
 				"repeat": 3,
 				"counter_name":  "research"}]}}
 		await card.execute_scripts()
-		assert_eq(9,board.counters.get_counter("research"),
+		assert_eq(9,await board.counters.get_counter("research"),
 				"Counter increased by specified amount")
 		card.scripts = {"manual": {"hand": [
 				{"name": "mod_counter",
@@ -19,7 +19,7 @@ class TestRepeat:
 				"set_to_mod": true,
 				"counter_name": "credits"}]}}
 		await card.execute_scripts()
-		assert_eq(2,board.counters.get_counter("credits"),
+		assert_eq(2,await board.counters.get_counter("credits"),
 				"Counter set to the specified amount")
 
 class TestRepeatWithTarget:

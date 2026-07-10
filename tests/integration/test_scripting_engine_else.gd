@@ -17,9 +17,9 @@ class TestElse:
 				"counter_name":  "credits"},]}}
 		await table_move(card, Vector2(100,200))
 		await card.execute_scripts()
-		assert_eq(1,board.counters.get_counter("research"),
+		assert_eq(1,await board.counters.get_counter("research"),
 				"Counter increased because rotation cost could be paid")
 		await card.execute_scripts()
-		assert_eq(90,board.counters.get_counter("credits"),
+		assert_eq(90,await board.counters.get_counter("credits"),
 				"Counter decreased because rotation cost could be paid")
 

@@ -147,7 +147,7 @@ class TestTargetScriptOnDragFromHand:
 		assert_true(card.targeting_arrow.get_node("ArrowHead").visible,
 				"Targeting has started on long-click")
 		await target_card(card,target)
-		assert_eq(board.counters.get_counter("credits"),8,
+		assert_eq(await board.counters.get_counter("credits"),8,
 				"Counter reduced by 2")
 		assert_false(target.is_faceup,
 				"Target is face-down")
@@ -164,7 +164,7 @@ class TestTargetScriptOnDragFromHand:
 		assert_false(card.targeting_arrow.get_node("ArrowHead").visible,
 				"Targeting not started because costs cannot be paid")
 		await target_card(card,target)
-		assert_eq(board.counters.get_counter("credits"),8,
+		assert_eq(await board.counters.get_counter("credits"),8,
 				"Counter not reduced")
 		assert_true(target.is_faceup,
 				"Target stayed face-up since cost could not be paid")
@@ -181,7 +181,7 @@ class TestTargetScriptOnDragFromHand:
 		assert_true(card.targeting_arrow.get_node("ArrowHead").visible,
 				"Targeting started because targeting is_cost")
 		await target_card(card,target)
-		assert_eq(board.counters.get_counter("credits"),8,
+		assert_eq(await board.counters.get_counter("credits"),8,
 				"Counter not reduced")
 		assert_true(target.is_faceup,
 				"Target stayed face-up since cost could not be paid")
@@ -196,7 +196,7 @@ class TestTargetScriptOnDragFromHand:
 		await drag_card(card, Vector2(300,300))
 		unclick_card_anywhere(card)
 		await yield_for(0.1)
-		assert_eq(board.counters.get_counter("credits"),8,
+		assert_eq(await board.counters.get_counter("credits"),8,
 				"Counter not reduced since nothing was targeted")
 		card.scripts = {"manual": {"hand": [
 					{"name": "flip_card",
@@ -208,5 +208,5 @@ class TestTargetScriptOnDragFromHand:
 					"counter_name": "credits"}]}}
 		await drag_card(card, Vector2(300,300))
 		unclick_card_anywhere(card)
-		assert_eq(board.counters.get_counter("credits"),5,
+		assert_eq(await board.counters.get_counter("credits"),5,
 				"Counter reduced since targeting was not a cost")

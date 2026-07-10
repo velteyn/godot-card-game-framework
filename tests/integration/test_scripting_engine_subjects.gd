@@ -16,12 +16,12 @@ class TestSubjectTarget:
 		var scripting_engine = await card.execute_scripts()
 
 		#watch_signals(scripting_engine)
-		await yield_to(target_card(card,card), "completed", 0.1)
+		await target_card(card, card)
 	#	yield(target_card(card,card), "completed")
 		await yield_to(card._tween, "finished", 0.4)
 		assert_eq(card.card_rotation, 270,
 				"First rotation should happen before targetting second time")
-		await yield_to(target_card(card,card), "completed", 0.1)
+		await target_card(card, card)
 		await yield_to(card._tween, "finished", 0.4)
 		assert_eq(card.card_rotation, 90,
 				"Second rotation should also happen")
@@ -202,11 +202,11 @@ class TestSubjectPreviousWithFilters:
 		card._debugger_hook = true
 		await execute_with_target(card,cards[2])
 		await yield_for(0.3)
-		assert_eq(board.counters.get_counter("research"),2,
+		assert_eq(await board.counters.get_counter("research"),2,
 				"Counter increased by specified amount")
 		await execute_with_target(card,cards[4])
 		await yield_for(0.3)
-		assert_eq(board.counters.get_counter("research"),3,
+		assert_eq(await board.counters.get_counter("research"),3,
 				"Counter increased by specified amount")
 
 class TestSubjectsNext:
@@ -241,6 +241,6 @@ class TestSubjectsNext:
 			}
 		await execute_with_target(card,target)
 		await yield_to(target._tween, "finished", 0.5)
-		assert_eq(board.counters.get_counter("research"),3,
+		assert_eq(await board.counters.get_counter("research"),3,
 				"Counter set to the specified amount")
 

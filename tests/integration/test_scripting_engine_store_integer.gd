@@ -54,7 +54,7 @@ class TestStoreIntegerWithCounters:
 					}]}}
 		await card.execute_scripts()
 		await yield_for(0.5)
-		assert_eq(board.counters.get_counter("credits"),7,
+		assert_eq(await board.counters.get_counter("credits"),7,
 			"2 Credits added")
 
 	func test_store_integer_with_tokens():
@@ -199,7 +199,7 @@ class TestAdjustRetrievedInteger:
 					}]}}
 		await card.execute_scripts()
 		await yield_for(0.5)
-		assert_eq(board.counters.get_counter("credits"),9,
+		assert_eq(await board.counters.get_counter("credits"),9,
 			"4 Credits added")
 
 	func test_adjust_retrieved_integer_inverted():
@@ -226,6 +226,6 @@ class TestAdjustRetrievedInteger:
 					}]}}
 		await card.execute_scripts()
 		await yield_for(0.5)
-		assert_eq(board.counters.get_counter("credits"),3,
+		assert_eq(await board.counters.get_counter("credits"),3,
 			"2 Credits Removed")
 

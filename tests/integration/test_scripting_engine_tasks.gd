@@ -310,7 +310,7 @@ class TestModCounters:
 				"modification": 5,
 				"counter_name":  "research"}]}}
 		await card.execute_scripts()
-		assert_eq(5,board.counters.get_counter("research"),
+		assert_eq(5,await board.counters.get_counter("research"),
 				"Counter increased by specified amount")
 		card.scripts = {"manual": {"hand": [
 				{"name": "mod_counter",
@@ -318,7 +318,7 @@ class TestModCounters:
 				"set_to_mod": true,
 				"counter_name": "credits"}]}}
 		await card.execute_scripts()
-		assert_eq(2,board.counters.get_counter("credits"),
+		assert_eq(2,await board.counters.get_counter("credits"),
 				"Counter set to the specified amount")
 
 	func test_draw_more_cards_than_pile_max():

@@ -817,7 +817,7 @@ func mod_counter(script: ScriptTask) -> int:
 	if not set_to_mod:
 		alteration = await _check_for_alterants(script, modification)
 	if script.get_property(SP.KEY_STORE_INTEGER):
-		var current_count = cfc.NMAP.board.counters.get_counter(
+		var current_count = await cfc.NMAP.board.counters.get_counter(
 				counter_name, script.owner)
 		if set_to_mod:
 			stored_integer = modification + alteration - current_count
