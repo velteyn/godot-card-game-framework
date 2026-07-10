@@ -191,8 +191,8 @@ themes/                 ← Dark theme
 ### Phase 6 (Verification) — 🔶 In Progress
 - Project loads in headless mode without compilation errors
 - All 8 unit test files pass: `test_card_class.gd` (10/10), `test_cardcontainer_class.gd` (5/5), `test_pile_class.gd` (6/6), `test_AskInteger_scene.gd` (3/3), `test_OptionalConfirmation_scene.gd` (5/5), `test_DeckBuilder.gd` (2/2), `test_token_class.gd` (6/6)
-- Integration tests: infrastructure fixed (247 signal renames, `.from()` guards, `get_node('Tween')` fixes, `ev.meta`, `fancy_movement`, `cfc.ut`)
-- Remaining integration blocker: card drag/drop (Area2D overlap detection may not work in Godot 4 headless mode — `area_entered` signals never fire, so cards never enter `FOCUSED_IN_HAND` state and drag never starts)
+- Integration tests: infrastructure 95% fixed (247 signal renames, `.from()` guards, `get_node('Tween')` fixes, `cfc.ut`, `fancy_movement`, `_find_container_at` helper, `drag_drop` bypass for headless)
+- Remaining: card `global_position` stale after `move_to` — cards move to correct parent but position stays at hand coordinates. State transition completes, coordinate update needs visual debugging.
 
 ### Key Bugs Discovered During Migration
 
@@ -238,6 +238,8 @@ themes/                 ← Dark theme
 26. **`cfc.ut` (unit-test flag) never explicitly set**: The `MousePointer.determine_global_mouse_pos()` method checks `if cfc.ut and cfc.NMAP.get("board")` to use the virtual `_UT_mouse_position` for tests. While `cfc._setup()` sets `ut = true` when `is_testing` is true, this was redundant but harmless. The flag is now explicitly set in both `setup_board()` and `setup_main()` for clarity and safety.
 
 27. **`fancy_movement` causes integration test deadlocks**: Card movement tweens with `await _tween.finished` deadlock in headless mode if tweens never complete. Setting `cfc.game_settings.fancy_movement = false` in `UTcommon.before_all()` makes movement instant (no tweens), avoiding the deadlock. Individual tests that need fancy movement can re-enable it in their own `before_each`.
+
+28. **Card `global_position` stale after `move_to`**: The `move_to()` function changes the card's parent (e.g., from hand to pile) and restores `global_position = previous_pos` at line 1226. The MOVING_TO_CONTAINER state handler then creates a tween to `_target_position` (the pile's stack position). The tween completes and `_determine_idle_state()` runs, but the card's `global_position` remains at the old hand coordinates. This may be a Godot 4 coordinate-system difference in how `global_position` is computed after reparenting + tween. Needs editor-mode visual debugging to trace the transform chain.
 
 ## Key Conversion Challenges
 

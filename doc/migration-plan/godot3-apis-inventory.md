@@ -130,3 +130,5 @@ This file catalogs every Godot 3.x-specific API usage pattern found in the codeb
 | `yield_to` on null tween | UTcommon.gd | GUT crashes on null object with `"get_signal_list in null instance"` |
 | `Area2D` overlap signals in headless | All drag tests | `area_entered` may not fire in Godot 4 `--headless`; card focus state never set → drag stuck |
 | `fancy_movement` deadlocks in headless | All integration tests | Tween `await _tween.finished` never resolves; disable via `cfc.game_settings.fancy_movement = false` |
+| drag_drop bypass for headless | UTcommon.gd | `_find_container_at()` detects target by CollisionShape2D; `drag_drop` calls `move_to` directly |
+| `global_position` stale after reparent+tween | CardTemplate.gd:move_to | Card position stays at hand coords after parent change to pile; needs editor debugging |

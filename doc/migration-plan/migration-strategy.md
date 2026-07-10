@@ -143,7 +143,7 @@
 | `test_OptionalConfirmation_scene.gd` | ✅ 5/5 passing | |
 | `test_DeckBuilder.gd` | ✅ 2/2 passing | |
 | `test_token_class.gd` | ✅ 6/6 passing | |
-| Integration tests (30+ files) | 🔶 Partially fixed | Infrastructure fixes applied (247 signal renames, .from() guards, get_node('Tween') fixes, fancy_movement, cfc.ut). Remaining: Area2D overlap not firing in headless → drag/drop doesn't start |
+| Integration tests (30+ files) | 🔶 Partially fixed | Infrastructure done (signal renames, .from() guards, drag_drop bypass). Remaining: card global_position stale after move_to reparent — needs visual debug |
 
 ## Key Godot 4 Pitfalls Discovered
 
@@ -220,10 +220,13 @@ When a Tween is already running, `.from()` on a new `PropertyTweener` returns nu
 GUT's `yield_to(null_tween, "finished", 1)` raises `"get_signal_list in null instance"`. Guard with `if tween and tween.is_valid()`.
 
 ### Area2D overlap signals may not fire in headless mode
-In Godot 4 `--headless`, `area_entered`/`area_exited` signals may not fire when Area2D positions are changed programmatically. The card drag/drop system requires these signals to trigger `_on_Card_mouse_entered` → focus state → drag initiation. Without them, cards never leave `IN_HAND` state. Workaround: bypass the focus check in test click helpers. Needs editor-mode verification.
+In Godot 4 `--headless`, `area_entered`/`area_exited` signals may not fire when Area2D positions are changed programmatically. The card drag/drop system requires these signals to trigger `_on_Card_mouse_entered` → focus state → drag initiation. Workaround: `_find_container_at()` helper in UTcommon.gd detects target containers by CollisionShape2D bounds, and `drag_drop()` calls `card.move_to()` directly instead of using the mouse input system.
 
 ### fancy_movement causes tween deadlocks in headless
 When `fancy_movement = true`, card movements create tweens with `await _tween.finished`. In headless mode, these may never complete, causing infinite deadlocks. Disable `fancy_movement` globally in test before_all.
+
+### card global_position stale after move_to reparent + tween
+After `move_to(pile)`, the card's parent changes and position is restored to old hand coordinates. The state machine's position tween completes and `_determine_idle_state()` is called, but `global_position` doesn't reflect the pile's local position. May be a Godot 4 Node2D coordinate transform chain issue — needs editor-mode visual debugging.
 
 ## Risks & Considerations
 

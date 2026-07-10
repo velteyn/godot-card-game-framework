@@ -156,6 +156,12 @@ In Godot 4 `--headless` mode, `Area2D` overlap signals (`area_entered`, `area_ex
 ### fancy_movement causes tween deadlocks in headless
 When `fancy_movement = true` (default), card movement uses `create_tween()` with `await _tween.finished`. In headless mode, if the tween never completes (scene tree not processing frames fully), the `await` deadlocks indefinitely. Fix: disable `fancy_movement` globally in test setup via `UTcommon.before_all()`, making card positions set instantly without tweening. Individual tests that need the tween system can re-enable it.
 
+### drag_drop bypass for headless Area2D limitation
+Since `Area2D` overlap signals don't fire in headless mode, the card interaction system's mouse-based drag/drop never starts. Added `_find_container_at()` helper in UTcommon.gd that detects target containers by their `CollisionShape2D` position and size. `drag_drop()` now calls `card.move_to(container)` directly when a target container is found, bypassing the mouse input system entirely. This allows integration tests to move cards between containers without visual mode.
+
+### card global_position stale after reparent + tween in move_to
+After `card.move_to(pile)`, the card is reparented and `global_position` is restored to the previous hand position (line 1226 of CardTemplate.gd). The MOVING_TO_CONTAINER state handler creates a position tween to `get_stack_position()`, but the card's final `global_position` remains at the old hand coordinates even after `_determine_idle_state()`. Possible root cause: Godot 4 coordinate transform chain difference — `global_position` may not recompute correctly after reparenting + local position tween. The `await _tween.finished` inside `_process_card_state` was confirmed to work correctly in Godot 4 (debug prints show `_determine_idle_state` IS called). Needs editor-mode inspection of the Node2D transform hierarchy.
+
 ## Documentation Links
 
 - Godot 3 to 4 migration: https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.html
