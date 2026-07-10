@@ -143,7 +143,7 @@
 | `test_OptionalConfirmation_scene.gd` | ✅ 5/5 passing | |
 | `test_DeckBuilder.gd` | ✅ 2/2 passing | |
 | `test_token_class.gd` | ✅ 6/6 passing | |
-| Integration tests (30+ files) | 🔶 Partially fixed | 247 tween signal fixes, from() guards, get_node('Tween') fixes applied. Remaining: card drag/drop state machine, started tween errors, timeouts |
+| Integration tests (30+ files) | 🔶 Partially fixed | Infrastructure fixes applied (247 signal renames, .from() guards, get_node('Tween') fixes, fancy_movement, cfc.ut). Remaining: Area2D overlap not firing in headless → drag/drop doesn't start |
 
 ## Key Godot 4 Pitfalls Discovered
 
@@ -218,6 +218,12 @@ When a Tween is already running, `.from()` on a new `PropertyTweener` returns nu
 
 ### yield_to on null tween crashes GUT
 GUT's `yield_to(null_tween, "finished", 1)` raises `"get_signal_list in null instance"`. Guard with `if tween and tween.is_valid()`.
+
+### Area2D overlap signals may not fire in headless mode
+In Godot 4 `--headless`, `area_entered`/`area_exited` signals may not fire when Area2D positions are changed programmatically. The card drag/drop system requires these signals to trigger `_on_Card_mouse_entered` → focus state → drag initiation. Without them, cards never leave `IN_HAND` state. Workaround: bypass the focus check in test click helpers. Needs editor-mode verification.
+
+### fancy_movement causes tween deadlocks in headless
+When `fancy_movement = true`, card movements create tweens with `await _tween.finished`. In headless mode, these may never complete, causing infinite deadlocks. Disable `fancy_movement` globally in test before_all.
 
 ## Risks & Considerations
 

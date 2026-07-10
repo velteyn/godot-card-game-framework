@@ -128,3 +128,5 @@ This file catalogs every Godot 3.x-specific API usage pattern found in the codeb
 | `card.get_node('Tween')` removes Tween node | 5 test files | Godot 3 Tween child nodes removed; use `card._tween` (member var from `create_tween()`) |
 | `PropertyTweener.from()` returns null | CardTemplate.gd, Pile.gd | Returns null when parent Tween already started; capture and guard |
 | `yield_to` on null tween | UTcommon.gd | GUT crashes on null object with `"get_signal_list in null instance"` |
+| `Area2D` overlap signals in headless | All drag tests | `area_entered` may not fire in Godot 4 `--headless`; card focus state never set → drag stuck |
+| `fancy_movement` deadlocks in headless | All integration tests | Tween `await _tween.finished` never resolves; disable via `cfc.game_settings.fancy_movement = false` |

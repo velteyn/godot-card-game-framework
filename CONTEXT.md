@@ -191,8 +191,8 @@ themes/                 ← Dark theme
 ### Phase 6 (Verification) — 🔶 In Progress
 - Project loads in headless mode without compilation errors
 - All 8 unit test files pass: `test_card_class.gd` (10/10), `test_cardcontainer_class.gd` (5/5), `test_pile_class.gd` (6/6), `test_AskInteger_scene.gd` (3/3), `test_OptionalConfirmation_scene.gd` (5/5), `test_DeckBuilder.gd` (2/2), `test_token_class.gd` (6/6)
-- Integration tests partially fixed: 247 `tween_all_completed`→`finished` replacements, `.get_node('Tween')`→`._tween` fixes, `.from()` null guards, `ev.meta` removal, `mouse_pointer` null guard
-- Remaining integration failures: card drag/drop state machine (cards stuck at scene position), lingering "started" tween errors, some deadlocks (timeouts)
+- Integration tests: infrastructure fixed (247 signal renames, `.from()` guards, `get_node('Tween')` fixes, `ev.meta`, `fancy_movement`, `cfc.ut`)
+- Remaining integration blocker: card drag/drop (Area2D overlap detection may not work in Godot 4 headless mode — `area_entered` signals never fire, so cards never enter `FOCUSED_IN_HAND` state and drag never starts)
 
 ### Key Bugs Discovered During Migration
 
@@ -233,7 +233,11 @@ themes/                 ← Dark theme
 
 24. **`yield_to` on null tween crashes GUT**: When GUT's `yield_to(object, signal, timeout)` is called with a null `object`, it triggers `"get_signal_list in null instance"`. All `yield_to` calls on `card._tween` must be guarded with `if card._tween and card._tween.is_valid()`.
 
-25. **Card drag/drop state machine not completing**: Integration tests show cards stuck at `Vector2(-75, 0)` (scene default position) after drag/drop. The card's `_on_Card_gui_input` / `move_to` / state transitions don't complete correctly in Godot 4. Root cause still under investigation.
+25. **Card drag/drop state machine not completing**: Integration tests show cards stuck at `Vector2(-75, 0)` (scene default position) after drag/drop. Root cause: the card interaction system depends on `Area2D` overlap signals (`area_entered` → `_discover_focus` → `_on_Card_mouse_entered` → `FOCUSED_IN_HAND` state), which do not fire in Godot 4 `--headless` mode. The drag handler checks `if state in [FOCUSED_IN_HAND, ...]` but the card never enters a focused state because the virtual mouse never "overlaps" the card's Area2D collision shape. Fix: added `click_card` state force as workaround; needs editor-mode verification.
+
+26. **`cfc.ut` (unit-test flag) never explicitly set**: The `MousePointer.determine_global_mouse_pos()` method checks `if cfc.ut and cfc.NMAP.get("board")` to use the virtual `_UT_mouse_position` for tests. While `cfc._setup()` sets `ut = true` when `is_testing` is true, this was redundant but harmless. The flag is now explicitly set in both `setup_board()` and `setup_main()` for clarity and safety.
+
+27. **`fancy_movement` causes integration test deadlocks**: Card movement tweens with `await _tween.finished` deadlock in headless mode if tweens never complete. Setting `cfc.game_settings.fancy_movement = false` in `UTcommon.before_all()` makes movement instant (no tweens), avoiding the deadlock. Individual tests that need fancy movement can re-enable it in their own `before_each`.
 
 ## Key Conversion Challenges
 

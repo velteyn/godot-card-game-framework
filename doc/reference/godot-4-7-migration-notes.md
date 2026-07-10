@@ -150,6 +150,12 @@ GUT's `yield_to(object, signal, timeout)` raises `"get_signal_list in null insta
 
 Found in: `UTcommon.gd:drop_card`, `UTcommon.gd:table_move`
 
+### Area2D overlap signals not firing in headless mode
+In Godot 4 `--headless` mode, `Area2D` overlap signals (`area_entered`, `area_exited`) may not fire when an Area2D's position is changed programmatically. The card interaction system relies on these signals to detect mouse-over events: `area_entered` → `_discover_focus` → `_on_Card_mouse_entered` → `FOCUSED_IN_HAND` state → drag initiation. Without overlap signals, cards never enter focused state and drag/drop never starts. This may be a Godot 4 headless physics limitation. Workaround: bypass the state check in test code by forcing `card.state = FOCUSED_IN_HAND` before sending click events.
+
+### fancy_movement causes tween deadlocks in headless
+When `fancy_movement = true` (default), card movement uses `create_tween()` with `await _tween.finished`. In headless mode, if the tween never completes (scene tree not processing frames fully), the `await` deadlocks indefinitely. Fix: disable `fancy_movement` globally in test setup via `UTcommon.before_all()`, making card positions set instantly without tweening. Individual tests that need the tween system can re-enable it.
+
 ## Documentation Links
 
 - Godot 3 to 4 migration: https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.html
