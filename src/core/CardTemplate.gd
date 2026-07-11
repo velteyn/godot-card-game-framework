@@ -2338,6 +2338,7 @@ func _process_card_state():
 			# warning-ignore:return_value_discarded
 			# set_card_rotation(0,false,false)
 			if not (_tween and _tween.is_running()):
+				state_finalized = true
 				var intermediate_position: Vector2
 				if not scale.is_equal_approx(Vector2(1,1)):
 					_add_tween_scale(scale, Vector2(1,1),to_container_tween_duration)
@@ -2403,7 +2404,6 @@ func _process_card_state():
 				if _tween and _tween.is_running():
 					await _tween.finished
 					_determine_idle_state()
-				state_finalized = true
 				_fancy_move_second_part = false
 
 		CardState.REORGANIZING:
