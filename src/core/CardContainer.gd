@@ -93,6 +93,7 @@ func _init_control_size() -> void:
 # Initialize some of the controls to ensure
 # that they are in the expected state
 func _init_ui() -> void:
+	control.z_index = 1
 	for button in get_all_manipulation_buttons():
 		button.modulate.a = 0
 
