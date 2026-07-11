@@ -162,6 +162,14 @@ Since `Area2D` overlap signals don't fire in headless mode, the card interaction
 ### card global_position stale after reparent + tween in move_to
 After `card.move_to(pile)`, the card is reparented and `global_position` is restored to the previous hand position (line 1226 of CardTemplate.gd). The MOVING_TO_CONTAINER state handler creates a position tween to `get_stack_position()`, but the card's final `global_position` remains at the old hand coordinates even after `_determine_idle_state()`. Possible root cause: Godot 4 coordinate transform chain difference — `global_position` may not recompute correctly after reparenting + local position tween. The `await _tween.finished` inside `_process_card_state` was confirmed to work correctly in Godot 4 (debug prints show `_determine_idle_state` IS called). Needs editor-mode inspection of the Node2D transform hierarchy.
 
+### Control/CanvasItem render pass merged — UNRESOLVED
+**Godot 3 behavior:** Control children of a CanvasItem/Node2D parent rendered in a separate pass always on top of non-Control siblings. This meant pile labels and manipulation buttons (children of a Control Panel inside an Area2D) always appeared above card Area2D siblings.
+**Godot 4 behavior:** All children of a Node2D parent are sorted by `z_index` only, then by scene tree order. Controls and Area2Ds share the same render pass. Since cards are added after the Control in the tree, they render on top, hiding labels and buttons.
+**Attempts:** `control.z_index = 1` raises the Control above cards, but the Panel's semi-transparent background then masks cards. The opacity tween in `_pile_add_card` should fade `self_modulate.a` to 0 when cards are present, but the opacity tween is only triggered via `_pile_add_card` (not called during initial `load_test_cards` which uses raw `add_child`). Additionally, `mouse_filter = PASS` no longer emits `mouse_entered` in Godot 4 (must use `STOP`). Even with `STOP` + `z_index = 1`, hover detection may still fail because the Area2D parent's physics input layer may intercept events before the GUI system processes the Control. This is especially relevant when the entire board is inside a `SubViewport`. **Status:** remains unresolved as of godot4-migration branch.
+
+### Tween auto-delete causes state machine re-entry
+In Godot 4, `Tween` auto-deletes on completion (unlike Godot 3 where tweens persisted). The `is_running()` guard in state handlers returns `false` after auto-delete, causing endless tween respawning. Fix: all tween-driven state handlers must use a `state_finalized` flag set BEFORE any `await`, preventing re-entry from fresh coroutine invocations.
+
 ## Documentation Links
 
 - Godot 3 to 4 migration: https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.html

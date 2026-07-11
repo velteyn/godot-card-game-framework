@@ -257,6 +257,14 @@ themes/                 ← Dark theme
 
 36. **`target_card()` coroutine in `yield_to()` wrappers**: The `target_card()` test utility function is a coroutine (uses `await yield_for()`). Calls wrapped in `yield_to(target_card(...), "completed", 0.1)` failed because Godot 4 requires `await` on the coroutine itself, even when used as an argument. Fix: replaced with direct `await target_card(...)`.
 
+37. **Pile Control labels/buttons hidden behind cards — UNRESOLVED**: In Godot 3, Control children of CanvasItem parents rendered in a **separate pass** always on top of non-Control children. Godot 4 merged all children into a single `z_index` sort. This causes pile labels ("Deck", card count) and manipulation buttons (V, VS, S) to render behind card objects, making them invisible when cards are stacked. Attempted fixes:
+   - `control.z_index = 1` — raises Control above cards but semi-transparent panel background then masks cards.
+   - `control.mouse_filter = STOP` — ensures `mouse_entered` fires (Godot 4's `PASS` filter blocks it, unlike Godot 3).
+   - Existing opacity tween in `_pile_add_card` fades `self_modulate.a` to 0 when cards present — should resolve the panel masking issue.
+   - Cards in `IN_PILE` state already set `set_control_mouse_filters(false)` (card Control → IGNORE, card Area2D → not monitorable), which should prevent them from intercepting mouse events.
+   - Despite these fixes, hover detection on the pile Control doesn't fire when cards overlap. The deck placeholder (semi-transparent panel) is visible when empty but buttons/labels remain behind cards. Root cause likely involves Godot 4's unified child rendering vs input event dispatch: even with `z_index = 1`, the Control may not receive `mouse_entered` if sibling Area2D children intercept input at the physics level before the GUI system processes Control events. The Pile is an `Area2D` and its Control child sits inside a `SubViewport`, adding another layer of input routing complexity. Needs investigation of Godot 4's `SubViewport` input dispatch order for Controls vs Area2D children.
+   - Related: `card_count_label.text` is only updated via `_pile_add_card`/`_pile_remove_card`, which are not called during initial `load_test_cards` (uses raw `add_child`). Card count shows "0" until a reshuffle triggers the label update.
+
 ## Key Conversion Challenges
 
 1. **`yield` everywhere** — The codebase relies heavily on `yield` for animation sequencing, async card movement, and test coordination. Every occurrence must be converted to `await`.
