@@ -2074,7 +2074,7 @@ func _determine_idle_state() -> void:
 # Makes the card change visibility nicely
 func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# We only want to do something if we're actually doing something
-	if modulate[3] != visibility:
+	if modulate.a != visibility:
 		if _tween and _tween.is_valid(): _tween.kill()
 		_tween = create_tween()
 		_tween.set_parallel(true)
@@ -2567,8 +2567,8 @@ func _process_card_state():
 			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
-			if modulate[3] != 1:
-				modulate[3] = 1
+			if modulate.a != 1:
+				modulate.a = 1
 			if scale != Vector2(0.75,0.75):
 				scale = Vector2(0.75,0.75)
 			if position != Vector2(0,0):

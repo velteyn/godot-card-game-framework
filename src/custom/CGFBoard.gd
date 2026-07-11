@@ -22,7 +22,12 @@ func _ready() -> void:
 	if not cfc.is_testing:
 		load_test_cards(false)
 	# warning-ignore:return_value_discarded
-	$DeckBuilderPopup.connect('popup_hide', Callable(self, '_on_DeckBuilder_hide'))
+	$DeckBuilderPopup.connect('visibility_changed', Callable(self, '_on_DeckBuilder_visibility_changed'))
+
+
+func _on_DeckBuilder_visibility_changed() -> void:
+	if not $DeckBuilderPopup.visible:
+		_on_DeckBuilder_hide()
 
 
 

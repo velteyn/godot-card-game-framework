@@ -32,6 +32,10 @@ func _on_CardChoices_id_pressed(id: int) -> void:
 # It ensures the "id_pressed" signal is emited even when no choice has
 # been made, to allow the script execution to continue and not
 # leave yields waiting
+func _on_CardChoices_visibility_changed() -> void:
+	if not visible:
+		_on_CardChoices_popup_hide()
+
 func _on_CardChoices_popup_hide() -> void:
 	# We also allow Unit Tests to send the signal through this function
 	if not id_selected or cfc.ut:

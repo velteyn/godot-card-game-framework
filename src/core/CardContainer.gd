@@ -94,7 +94,7 @@ func _init_control_size() -> void:
 # that they are in the expected state
 func _init_ui() -> void:
 	for button in get_all_manipulation_buttons():
-		button.modulate[3] = 0
+		button.modulate.a = 0
 
 
 # Registers signals for this node
@@ -132,7 +132,7 @@ func _on_button_mouse_entered() -> void:
 	if manipulation_buttons_tween and manipulation_buttons_tween.is_valid():
 		manipulation_buttons_tween.kill()
 	for button in get_all_manipulation_buttons():
-		button.modulate[3] = 1
+		button.modulate.a = 1
 
 
 # Triggers pile shuffling

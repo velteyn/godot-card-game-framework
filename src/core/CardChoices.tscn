@@ -48,4 +48,4 @@ offset_bottom = 40.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource( 3 )
 [connection signal="id_pressed" from="." to="." method="_on_CardChoices_id_pressed"]
-[connection signal="popup_hide" from="." to="." method="_on_CardChoices_popup_hide"]
+[connection signal="visibility_changed" from="." to="." method="_on_CardChoices_visibility_changed"]

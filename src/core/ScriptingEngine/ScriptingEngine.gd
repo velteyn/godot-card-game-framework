@@ -736,7 +736,7 @@ func ask_integer(script: ScriptTask):
 	var maximum = script.get_property(SP.KEY_ASK_INTEGER_MAX)
 	integer_dialog.prep(script.owner.canonical_name, minimum, maximum)
 	# We have to wait until the player has finished selecting an option
-	await integer_dialog.popup_hide
+	await integer_dialog.visibility_changed
 	stored_integer = integer_dialog.number
 	# Garbage cleanup
 	integer_dialog.queue_free()

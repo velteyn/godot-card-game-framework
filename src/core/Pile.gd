@@ -50,7 +50,7 @@ func _ready():
 	# warning-ignore:return_value_discarded
 	view_sorted_button.connect("pressed", Callable(self, '_on_ViewSorted_Button_pressed'))
 	# warning-ignore:return_value_discarded
-	$ViewPopup.connect("popup_hide", Callable(self, '_on_ViewPopup_popup_hide'))
+	$ViewPopup.connect("visibility_changed", Callable(self, '_on_ViewPopup_visibility_changed'))
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("about_to_popup", Callable(self, '_on_ViewPopup_about_to_show'))
 	set_pile_name(pile_name)
@@ -63,7 +63,6 @@ func _ready():
 
 
 func _process(_delta) -> void:
-	pass
 	# This performs a bit of garbage collection to make sure no Control temp objects
 	# are leftover empty in the popup
 	for obj in $ViewPopup/CardView.get_children():
@@ -102,6 +101,10 @@ func _on_ViewPopup_about_to_show() -> void:
 
 
 # Puts all [Card] objects to the root node once the popup view window closes
+func _on_ViewPopup_visibility_changed():
+	if not $ViewPopup.visible:
+		_on_ViewPopup_popup_hide()
+
 func _on_ViewPopup_popup_hide():
 	_returning_from_popup = true
 	for card in pre_sorted_order:
