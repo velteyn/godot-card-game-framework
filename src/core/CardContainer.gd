@@ -93,6 +93,12 @@ func _init_control_size() -> void:
 # Initialize some of the controls to ensure
 # that they are in the expected state
 func _init_ui() -> void:
+	# In Godot 4, Control and CanvasItem children share z_index sorting.
+	# We need the Control (labels/buttons) on top of cards, but the panel
+	# background must be transparent so it doesn't mask the card stack.
+	control.z_index = 1
+	if control is Panel:
+		control.set("theme_override_styles/panel", StyleBoxEmpty.new())
 	for button in get_all_manipulation_buttons():
 		button.modulate.a = 0
 
