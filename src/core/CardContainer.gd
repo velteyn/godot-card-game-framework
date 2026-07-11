@@ -97,6 +97,9 @@ func _init_ui() -> void:
 	# We need the Control (labels/buttons) on top of cards, but the panel
 	# background must be transparent so it doesn't mask the card stack.
 	control.z_index = 1
+	# In Godot 4, mouse_filter=PASS(1) prevents mouse_entered from firing.
+	# Switch to STOP(0) so hover detection triggers show_buttons/hide_buttons.
+	control.mouse_filter = Control.MOUSE_FILTER_STOP
 	if control is Panel:
 		control.set("theme_override_styles/panel", StyleBoxEmpty.new())
 	for button in get_all_manipulation_buttons():
