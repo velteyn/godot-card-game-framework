@@ -100,6 +100,7 @@ func _init_ui() -> void:
 	# In Godot 4, mouse_filter=PASS(1) prevents mouse_entered from firing.
 	# Switch to STOP(0) so hover detection triggers show_buttons/hide_buttons.
 	control.mouse_filter = Control.MOUSE_FILTER_STOP
+	manipulation_buttons.z_index = 1
 	for button in get_all_manipulation_buttons():
 		button.modulate.a = 0
 
@@ -186,6 +187,7 @@ func show_buttons() -> void:
 		manipulation_buttons_tween.kill()
 	manipulation_buttons_tween = create_tween()
 	for button in get_all_manipulation_buttons():
+		button.modulate.a = 1
 		manipulation_buttons_tween.tween_property(button, 'modulate:a',
 				1, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 
