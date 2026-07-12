@@ -1756,6 +1756,12 @@ func set_control_mouse_filters(value = true) -> void:
 	if monitorable != value:
 #		print_debug('monitorable')
 		monitorable = value
+	# In Godot 4, `monitorable` only prevents OTHER areas from detecting this one.
+	# `input_pickable` controls whether THIS area absorbs mouse hover/click events.
+	# Cards in piles need both false so mouse events fall through to the Pile Area2D,
+	# allowing its mouse_entered signal to fire and reveal the manipulation buttons.
+	if input_pickable != value:
+		input_pickable = value
 
 
 # Get card position in hand by index
