@@ -128,6 +128,7 @@ func _init_signal() -> void:
 
 # Hides the container manipulation buttons when you stop hovering over them
 func _on_Control_mouse_exited() -> void:
+	print("[PILE SIGNAL] exit ", name, " mouse=", get_global_mouse_position())
 	# We always make sure to clean tweening conflicts
 	hide_buttons()
 
@@ -135,6 +136,7 @@ func _on_Control_mouse_exited() -> void:
 # Shows the container manipulation buttons when the player hovers over them
 func _on_Control_mouse_entered() -> void:
 	if not cfc.game_paused:
+		print("[PILE SIGNAL] enter ", name, " mouse=", get_global_mouse_position())
 	# We always make sure to clean tweening conflicts
 		show_buttons()
 
@@ -147,6 +149,20 @@ func _on_button_mouse_entered() -> void:
 		manipulation_buttons_tween.kill()
 	for button in get_all_manipulation_buttons():
 		button.modulate.a = 1
+
+
+func are_buttons_visible() -> bool:
+	for button in get_all_manipulation_buttons():
+		if button.visible and button.modulate.a > 0.0:
+			return true
+	return false
+
+
+func are_buttons_hovered() -> bool:
+	for button in get_all_manipulation_buttons():
+		if button is Button and button.visible and button.is_hovered():
+			return true
+	return false
 
 
 # Triggers pile shuffling
@@ -171,6 +187,8 @@ func are_cards_still_animating() -> bool:
 
 # Hides manipulation buttons
 func hide_buttons() -> void:
+	if not are_buttons_visible():
+		return
 	if manipulation_buttons_tween and manipulation_buttons_tween.is_valid():
 		manipulation_buttons_tween.kill()
 	for button in get_all_manipulation_buttons():
@@ -179,6 +197,8 @@ func hide_buttons() -> void:
 
 # Shows manipulation buttons
 func show_buttons() -> void:
+	if are_buttons_visible():
+		return
 	if manipulation_buttons_tween and manipulation_buttons_tween.is_valid():
 		manipulation_buttons_tween.kill()
 	for button in get_all_manipulation_buttons():

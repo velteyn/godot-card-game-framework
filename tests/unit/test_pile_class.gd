@@ -35,6 +35,30 @@ func test_faceup_cards():
 	assert_eq(pile.get_top_card().is_faceup, pile.faceup_cards,\
 			"Card has to be faceup when moved into pile")
 
+
+func test_hover_shows_manipulation_buttons_when_cards_overlap():
+	var pile : Pile = cfc.NMAP.deck
+	var board := cfc.NMAP.board
+	await yield_for(0.1)
+	var collision_shape : CollisionShape2D = pile.get_node("CollisionShape2D")
+	assert_eq(pile.control.get_index(), pile.get_child_count() - 1,
+			"Pile control should be moved to the front after raw add_child card deployment")
+	assert_almost_eq(collision_shape.position, pile.control.position + pile.control.size / 2, Vector2(1,1),
+			"Pile collision shape should follow the deployed stack")
+	assert_almost_eq(pile.get_top_card().position, pile.get_stack_position(pile.get_top_card()), Vector2(1,1),
+			"Top card should be reorganized into stack position after startup deployment")
+	assert_false(pile.get_top_card().input_pickable,
+			"Pile cards should not absorb pointer input")
+	pile.hide_buttons()
+	board._UT_mouse_position = pile.to_global(pile.get_top_card().position + pile.get_top_card().card_size / 2)
+	pile._process(0.0)
+	assert_true(pile.are_buttons_visible(),
+			"Pile hover should show buttons even when a card also overlaps the pointer")
+	board._UT_mouse_position = Vector2(-1000, -1000)
+	pile._process(0.0)
+	assert_false(pile.are_buttons_visible(),
+			"Pile buttons should hide again after the pointer leaves")
+
 func test_popup_view():
 	var pile : Pile = cfc.NMAP.deck
 	await yield_for(0.1)

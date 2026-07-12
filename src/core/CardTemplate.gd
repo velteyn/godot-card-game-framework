@@ -1214,14 +1214,24 @@ func move_to(targetHost: Node,
 		elif parent_scale < target_scale:
 			scale *= parent_scale * target_scale
 		# We need to remove the current parent node before adding a different one
-		parentHost.remove_child(self)
-		targetHost.add_child(self)
+		if parentHost is Pile:
+			parentHost.pile_remove_child(self)
+		else:
+			parentHost.remove_child(self)
+		if targetHost is Pile:
+			targetHost.pile_add_child(self)
+		else:
+			targetHost.add_child(self)
 		# The below is used when a specific card position is requested
 		# It converts the requested card position, to absolute node position
 		# between all nodes
 		if index >= 0:
-			targetHost.move_child(self,
-					targetHost.translate_card_index_to_node_index(index))
+			if targetHost is Pile:
+				targetHost.pile_move_child(self,
+						targetHost.translate_card_index_to_node_index(index))
+			else:
+				targetHost.move_child(self,
+						targetHost.translate_card_index_to_node_index(index))
 		# Ensure card stays where it was before it changed parents
 		global_position = previous_pos
 		if targetHost.is_in_group("hands"):
@@ -1405,8 +1415,12 @@ func move_to(targetHost: Node,
 							_placement_slot = null
 				get_parent().move_child(self, get_parent().get_child_count() - 1)
 		elif parentHost == targetHost and index != get_my_card_index():
-			parentHost.move_child(self,
-					parentHost.translate_card_index_to_node_index(index))
+			if parentHost is Pile:
+				parentHost.pile_move_child(self,
+						parentHost.translate_card_index_to_node_index(index))
+			else:
+				parentHost.move_child(self,
+						parentHost.translate_card_index_to_node_index(index))
 		elif "CardPopUpSlot" in parentHost.name:
 			set_state(CardState.IN_POPUP)
 	common_post_move_scripts(targetHost.name, parentHost.name, tags)

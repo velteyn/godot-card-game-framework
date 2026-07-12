@@ -43,6 +43,7 @@ var _panel_transparent := false
 var _transparent_stylebox: StyleBoxEmpty
 
 var pre_sorted_order: Array
+var _last_hover_debug_signature := ""
 
 func _ready():
 	super()
@@ -90,14 +91,126 @@ func _process(_delta) -> void:
 		if not _panel_transparent:
 			_panel_transparent = true
 			$Control.add_theme_stylebox_override("panel", _transparent_stylebox)
+	var hover_info := _get_hover_debug_info()
+	var is_hovered: bool = hover_info["hovered"]
+	_sync_hover_buttons(is_hovered)
+	_update_hover_debug(hover_info)
 	if _has_cards and cfc.game_settings.focus_style:
 		var top_card = get_top_card()
-		if cfc.NMAP.board.mouse_pointer in get_overlapping_areas()\
-				and not cfc.card_drag_ongoing:
+		if is_hovered and not cfc.card_drag_ongoing:
 			if top_card and top_card.state == Card.CardState.IN_PILE:
 				top_card.state = Card.CardState.VIEWED_IN_PILE
 		elif top_card and top_card.state == Card.CardState.VIEWED_IN_PILE:
 			top_card.state = Card.CardState.IN_PILE
+
+
+func _is_pointer_hovering_pile() -> bool:
+	return _get_hover_debug_info()["hovered"]
+
+
+func _get_hover_debug_info() -> Dictionary:
+	var board = cfc.NMAP.get("board", null)
+	var global_mouse: Vector2
+	if cfc.ut and board:
+		global_mouse = board._UT_mouse_position
+	else:
+		global_mouse = get_global_mouse_position()
+	var top_card = get_top_card()
+	var top_rect := Rect2()
+	if top_card:
+		top_rect = Rect2(top_card.global_position, top_card.card_size * top_card.scale)
+	for card in get_all_cards():
+		if Rect2(card.global_position, card.card_size * card.scale).has_point(global_mouse):
+			return {
+				"hovered": true,
+				"source": "card_rect:%s" % card.name,
+				"mouse": global_mouse,
+				"control_rect": Rect2(global_position + $Control.position, $Control.size * $Control.scale),
+				"top_rect": top_rect,
+				"top_card": top_card,
+			}
+	var control_rect := Rect2(global_position + $Control.position, $Control.size * $Control.scale)
+	if control_rect.has_point(global_mouse):
+		return {
+			"hovered": true,
+			"source": "control_rect",
+			"mouse": global_mouse,
+			"control_rect": control_rect,
+			"top_rect": top_rect,
+			"top_card": top_card,
+		}
+	if board and board.mouse_pointer and self in board.mouse_pointer.overlaps:
+		return {
+			"hovered": true,
+			"source": "pointer_overlaps_pile",
+			"mouse": global_mouse,
+			"control_rect": control_rect,
+			"top_rect": top_rect,
+			"top_card": top_card,
+		}
+	if board and board.mouse_pointer and board.mouse_pointer in get_overlapping_areas():
+		return {
+			"hovered": true,
+			"source": "pile_overlaps_pointer",
+			"mouse": global_mouse,
+			"control_rect": control_rect,
+			"top_rect": top_rect,
+			"top_card": top_card,
+		}
+	return {
+		"hovered": false,
+		"source": "none",
+		"mouse": global_mouse,
+		"control_rect": control_rect,
+		"top_rect": top_rect,
+		"top_card": top_card,
+	}
+
+
+func _update_hover_debug(hover_info: Dictionary) -> void:
+	if not has_node("Debug"):
+		return
+	$Debug.visible = true
+	var top_card = hover_info["top_card"]
+	var top_card_name := "none"
+	if top_card:
+		top_card_name = top_card.name
+	$Debug/Position.text = "PILE %s\nmouse=%s\nhover=%s via %s" % [
+		name,
+		str(hover_info["mouse"]),
+		str(hover_info["hovered"]),
+		str(hover_info["source"]),
+	]
+	$Debug/AreaPos.text = "pile=%s\ncontrol=%s\ncontrol_rect=%s" % [
+		str(global_position),
+		str($Control.position),
+		str(hover_info["control_rect"]),
+	]
+	$Debug/Size.text = "top=%s\ntop_pos=%s\ntop_rect=%s" % [
+		top_card_name,
+		str(top_card.global_position if top_card else Vector2.ZERO),
+		str(hover_info["top_rect"]),
+	]
+	var mouse_bucket := Vector2i(int(hover_info["mouse"].x / 25.0), int(hover_info["mouse"].y / 25.0))
+	var signature := "%s|%s|%s|%s" % [
+		name,
+		str(hover_info["hovered"]),
+		str(hover_info["source"]),
+		str(mouse_bucket),
+	]
+	if signature != _last_hover_debug_signature:
+		_last_hover_debug_signature = signature
+		print("[PILE HOVER] ", signature, " control_rect=", hover_info["control_rect"], " top_rect=", hover_info["top_rect"])
+
+
+func _sync_hover_buttons(is_hovered: bool) -> void:
+	if not show_manipulation_buttons or is_popup_open or not manipulation_buttons.visible:
+		hide_buttons()
+		return
+	if is_hovered and not cfc.game_paused and not cfc.card_drag_ongoing:
+		show_buttons()
+	elif not are_buttons_hovered():
+		hide_buttons()
 
 
 # Populates the popup view window with all the cards in the deck
@@ -133,7 +246,7 @@ func _on_ViewPopup_popup_hide():
 #		print_debug(card.canonical_name, card.get_parent().name)
 		if "CardPopUpSlot" in card.get_parent().name:
 			card.get_parent().remove_child(card)
-			_pile_add_card(card)
+			pile_add_child(card)
 			# We need to remember that cards in piles should be left invisible
 			# and at default scale
 			card.scale = Vector2(1,1)
@@ -165,7 +278,7 @@ func populate_popup(sorted:= sorted_popup) -> void:
 		card_array.sort_custom(Callable(CFUtils, "sort_scriptables_by_name"))
 	for card in card_array:
 		# We remove the card to rehost it in the popup grid container
-		_pile_remove_card(card)
+		pile_remove_child(card)
 		_slot_card_into_popup(card)
 	# Finally we Pop the Up :)
 	$ViewPopup.popup()
@@ -189,15 +302,15 @@ func set_pile_name(value: String) -> void:
 		pile_name_label.text = value
 
 
-# Overrides the built-in add_card() method,
+# Pile-managed child insertion.
 # to make sure the control node is set to be the last one among siblings.
 # This way the control node intercepts any inputs.
 #
 # Also checks if the popup window is currently open, and puts the card
 # directly there in that case.
-func _pile_add_card(node, _legible_unique_name=false) -> void:
+func pile_add_child(node: Node, force_readable_name := false, internal := 0) -> void:
 	if not $ViewPopup.visible or _returning_from_popup:
-		super.add_child(node)
+		super.add_child(node, force_readable_name, internal)
 		if node is Card:
 			_has_cards = true
 			# By raising the $Control every time a card is added
@@ -216,10 +329,11 @@ func _pile_add_card(node, _legible_unique_name=false) -> void:
 		_slot_card_into_popup(node)
 
 
+# Pile-managed child removal.
 # Overrides the function which removed chilren nodes so that it detects
 # when a Card class is removed. In that case it also shows
 # this container's "floor" if it was the last card in the pile.
-func _pile_remove_card(node) -> void:
+func pile_remove_child(node: Node) -> void:
 	super.remove_child(node)
 	card_count_label.text = str(get_card_count())
 	# When we put the first card in the pile, we make sure the
@@ -267,19 +381,21 @@ func reorganize_stack() -> void:
 		position.y += get_card_count() * _shift_y()
 	if "right" in get_groups():
 		position.x -= get_card_count() * _shift_x()
+	$Control.move_to_front()
 	$CollisionShape2D.shape.extents = $Control.size / 2
 	$CollisionShape2D.position = $Control.position + $Control.size /2
 
 
+# Pile-managed child reordering.
 # Override to make sure the $Control node is always drawn on top of Card nodes
-func _pile_move_child(child_node, to_position) -> void:
+func pile_move_child(child_node: Node, to_position: int) -> void:
 	super.move_child(child_node, to_position)
 	$Control.move_to_front()
 
 # The top position of a pile, is always the lowest
 func move_card_to_top(card: Card) -> void:
 	var lowest_index = get_children().size() - 1
-	_pile_move_child(card, lowest_index)
+	pile_move_child(card, lowest_index)
 	reorganize_stack()
 
 # Overrides [CardContainer] function to include cards in the popup window

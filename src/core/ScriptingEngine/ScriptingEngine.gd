@@ -577,8 +577,13 @@ func spawn_card_to_container(script: ScriptTask):
 			card.spawn_destination = dest_container
 			card.state = Card.CardState.MOVING_TO_SPAWN_DESTINATION
 		else:
-			dest_container.add_child(card)
+			if dest_container is Pile:
+				dest_container.pile_add_child(card)
+			else:
+				dest_container.add_child(card)
 			card.set_to_idle()
+			if dest_container is Pile:
+				dest_container.reorganize_stack()
 		# We set the drawn cards as the subjects, so that they can be
 		# used by other followup scripts
 		var yield_time = script.get_property(SP.KEY_YIELD_TIME)
