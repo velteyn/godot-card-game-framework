@@ -2529,7 +2529,7 @@ func _process_card_state():
 		CardState.IN_PILE:
 			if state_finalized:
 				return
-			z_index = 0
+			z_index = -1
 			set_focus(false)
 			set_control_mouse_filters(false)
 			buttons.set_active(false)
@@ -2549,7 +2549,7 @@ func _process_card_state():
 		CardState.VIEWED_IN_PILE:
 			if state_finalized:
 				return
-			z_index = 0
+			z_index = -1
 			cfc.NMAP.main.focus_card(self)
 			set_control_mouse_filters(false)
 			buttons.set_active(false)

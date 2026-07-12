@@ -227,7 +227,7 @@ func _pile_remove_card(node) -> void:
 	if get_card_count() == 0:
 		_has_cards = false
 		_panel_transparent = false
-		$Control.remove_theme_stylebox_override("panel")
+		$Control.set("theme_override_styles/panel", null)
 		reorganize_stack()
 	else:
 		if not _panel_transparent:

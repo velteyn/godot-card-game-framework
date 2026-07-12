@@ -171,24 +171,21 @@ func are_cards_still_animating() -> bool:
 
 # Hides manipulation buttons
 func hide_buttons() -> void:
-	# We stop existing tweens to avoid deadlocks
 	if manipulation_buttons_tween and manipulation_buttons_tween.is_valid():
 		manipulation_buttons_tween.kill()
-	manipulation_buttons_tween = create_tween()
 	for button in get_all_manipulation_buttons():
-		manipulation_buttons_tween.tween_property(button, 'modulate:a',
-				0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		button.modulate.a = 0
+		button.z_as_relative = true
 
 
 # Shows manipulation buttons
 func show_buttons() -> void:
 	if manipulation_buttons_tween and manipulation_buttons_tween.is_valid():
 		manipulation_buttons_tween.kill()
-	manipulation_buttons_tween = create_tween()
 	for button in get_all_manipulation_buttons():
 		button.modulate.a = 1
-		manipulation_buttons_tween.tween_property(button, 'modulate:a',
-				1, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		button.z_index = 100
+		button.z_as_relative = false
 
 
 # Getter for all_manipulation_buttons
