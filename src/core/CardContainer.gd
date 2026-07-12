@@ -175,7 +175,6 @@ func hide_buttons() -> void:
 		manipulation_buttons_tween.kill()
 	for button in get_all_manipulation_buttons():
 		button.modulate.a = 0
-		button.z_as_relative = true
 
 
 # Shows manipulation buttons
@@ -184,8 +183,6 @@ func show_buttons() -> void:
 		manipulation_buttons_tween.kill()
 	for button in get_all_manipulation_buttons():
 		button.modulate.a = 1
-		button.z_index = 100
-		button.z_as_relative = false
 
 
 # Getter for all_manipulation_buttons
