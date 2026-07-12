@@ -484,7 +484,7 @@ func _on_Card_gui_input(event):
 				and not tokens.are_hovered():
 			# If it's a double-click, then it's not a card drag
 			# But rather it's script execution
-			if event.doubleclick\
+			if event.double_click\
 					and ((check_play_costs() != CFConst.CostsState.IMPOSSIBLE
 					and get_state_exec() == "hand")
 					or get_state_exec() == "board"):
