@@ -70,6 +70,18 @@ func _process(_delta) -> void:
 			obj.queue_free()
 	# We make sure to adjust our popup if cards were removed from it while it's open
 	$ViewPopup.reset_size()
+	# Keep card count label in sync even when cards are added via raw add_child
+	# (e.g. load_test_cards bypasses _pile_add_card which normally updates the label)
+	var count_str := str(get_card_count())
+	if card_count_label.text != count_str:
+		card_count_label.text = count_str
+	# Likewise, ensure the panel background is hidden whenever cards are present.
+	# _pile_add_card triggers an opacity tween, but raw add_child skips it, leaving
+	# the semi-transparent panel visible on top of card backs.
+	if get_card_count() > 0:
+		_has_cards = true
+		if $Control.self_modulate.a > 0.0 and not (_opacity_tween and _opacity_tween.is_running()):
+			$Control.self_modulate.a = 0.0
 	if _has_cards and cfc.game_settings.focus_style:
 		var top_card = get_top_card()
 		if cfc.NMAP.board.mouse_pointer in get_overlapping_areas()\

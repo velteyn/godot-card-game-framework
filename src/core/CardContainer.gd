@@ -110,6 +110,12 @@ func _init_signal() -> void:
 	control.connect("mouse_entered", Callable(self, "_on_Control_mouse_entered"))
 	# warning-ignore:return_value_discarded
 	control.connect("mouse_exited", Callable(self, "_on_Control_mouse_exited"))
+	# In Godot 4, $Control.mouse_entered can be blocked by Area2D card siblings
+	# intercepting input at the physics layer (even with z_index = 1 on the Control).
+	# Connect the Area2D's own mouse_entered/exited as a reliable fallback so
+	# manipulation buttons always appear on hover, even when cards are stacked.
+	mouse_entered.connect(Callable(self, "_on_Control_mouse_entered"))
+	mouse_exited.connect(Callable(self, "_on_Control_mouse_exited"))
 	# warning-ignore:return_value_discarded
 	for button in get_all_manipulation_buttons():
 		button.connect("mouse_entered", Callable(self, "_on_button_mouse_entered"))
