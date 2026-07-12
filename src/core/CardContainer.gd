@@ -134,7 +134,6 @@ func _on_Control_mouse_exited() -> void:
 
 # Shows the container manipulation buttons when the player hovers over them
 func _on_Control_mouse_entered() -> void:
-	print("HOVER ENTER: ", name)
 	if not cfc.game_paused:
 	# We always make sure to clean tweening conflicts
 		show_buttons()

@@ -39,12 +39,15 @@ var _has_cards := false
 var _opacity_tween: Tween
 var _tween: Tween
 var _returning_from_popup := false
+var _panel_transparent := false
+var _transparent_stylebox: StyleBoxEmpty
 
 var pre_sorted_order: Array
 
 func _ready():
 	super()
 	add_to_group("piles")
+	_transparent_stylebox = StyleBoxEmpty.new()
 	# warning-ignore:return_value_discarded
 	view_button.connect("pressed", Callable(self, '_on_View_Button_pressed'))
 	# warning-ignore:return_value_discarded
@@ -78,10 +81,15 @@ func _process(_delta) -> void:
 	# Likewise, ensure the panel background is hidden whenever cards are present.
 	# _pile_add_card triggers an opacity tween, but raw add_child skips it, leaving
 	# the semi-transparent panel visible on top of card backs.
+	# Use a transparent style override instead of self_modulate.a because
+	# self_modulate cascades to ALL children (labels + buttons) in Godot 4,
+	# making them invisible when set to 0. The panel style only affects the Panel
+	# background itself.
 	if get_card_count() > 0:
 		_has_cards = true
-		if $Control.self_modulate.a > 0.0 and not (_opacity_tween and _opacity_tween.is_running()):
-			$Control.self_modulate.a = 0.0
+		if not _panel_transparent:
+			_panel_transparent = true
+			$Control.add_theme_stylebox_override("panel", _transparent_stylebox)
 	if _has_cards and cfc.game_settings.focus_style:
 		var top_card = get_top_card()
 		if cfc.NMAP.board.mouse_pointer in get_overlapping_areas()\
@@ -198,12 +206,9 @@ func _pile_add_card(node, _legible_unique_name=false) -> void:
 			# If this was the first card which enterred this pile
 			# We hide the pile "floor" by making it transparent
 		if get_card_count() >= 1:
-			if not (_opacity_tween and _opacity_tween.is_running()):
-				if _opacity_tween and _opacity_tween.is_valid():
-					_opacity_tween.kill()
-				_opacity_tween = create_tween()
-				_opacity_tween.tween_property($Control, 'self_modulate:a',
-						$Control.self_modulate.a, 0.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			if not _panel_transparent:
+				_panel_transparent = true
+				$Control.add_theme_stylebox_override("panel", _transparent_stylebox)
 			card_count_label.text = str(get_card_count())
 	elif node is Card: # This triggers if the ViewPopup node is active
 		# When the player adds card while the viewpopup is active
@@ -221,15 +226,13 @@ func _pile_remove_card(node) -> void:
 	# Panel is made transparent so that the card backs are seen instead
 	if get_card_count() == 0:
 		_has_cards = false
+		_panel_transparent = false
+		$Control.remove_theme_stylebox_override("panel")
 		reorganize_stack()
-		if not (_opacity_tween and _opacity_tween.is_running()):
-			if _opacity_tween and _opacity_tween.is_valid():
-				_opacity_tween.kill()
-			_opacity_tween = create_tween()
-			_opacity_tween.tween_property($Control, 'self_modulate:a',
-					0.4, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	else:
-		$Control.self_modulate.a = 0.0
+		if not _panel_transparent:
+			_panel_transparent = true
+			$Control.add_theme_stylebox_override("panel", _transparent_stylebox)
 
 
 # Rearranges the position of the contained cards slightly
