@@ -14,6 +14,9 @@ func _ready() -> void:
 	# Discard pile goes bottom right
 	$FancyMovementToggle.button_pressed = cfc.game_settings.fancy_movement
 	$OvalHandToggle.button_pressed = cfc.game_settings.hand_use_oval_shape
+	$ScalingFocusOptions.add_item("Scaling Focus", CFInt.FocusStyle.SCALED)
+	$ScalingFocusOptions.add_item("SubViewport Focus", CFInt.FocusStyle.VIEWPORT)
+	$ScalingFocusOptions.add_item("Scaling + SubViewport Focus", CFInt.FocusStyle.BOTH)
 	$ScalingFocusOptions.selected = cfc.game_settings.focus_style
 	$Debug.button_pressed = cfc._debug
 	# Fill up the deck for demo purposes
