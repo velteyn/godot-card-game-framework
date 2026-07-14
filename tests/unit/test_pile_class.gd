@@ -13,9 +13,9 @@ func before_each():
 
 func test_get_card_methods():
 	var pile : Pile = cfc.NMAP.deck
-	assert_eq(pile.get_child(4),pile.get_bottom_card(),
+	assert_eq(pile.get_child(3),pile.get_bottom_card(),
 			'get_top_card() returns top card')
-	assert_eq(pile.get_child(pile.get_child_count() - 1),pile.get_top_card(),
+	assert_eq(pile.get_child(pile.get_child_count() - 2),pile.get_top_card(),
 			'get_bottom_card returns() bottom card')
 	assert_eq(pile.get_bottom_card(),pile.get_all_cards()[0],
 			"get_all_cards() works without anything in viewpile")
@@ -38,7 +38,7 @@ func test_faceup_cards():
 
 func test_hover_shows_manipulation_buttons_when_cards_overlap():
 	var pile : Pile = cfc.NMAP.deck
-	var board := cfc.NMAP.board
+	var board := cfc.NMAP.board as Board
 	await yield_for(0.1)
 	var collision_shape : CollisionShape2D = pile.get_node("CollisionShape2D")
 	assert_eq(pile.control.get_index(), pile.get_child_count() - 1,

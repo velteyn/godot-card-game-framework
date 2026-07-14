@@ -3,6 +3,7 @@ extends Board
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	super()
 	counters = $Counters
 	cfc.map_node(self)
 	# We use the below while to wait until all the nodes we need have been mapped
@@ -13,6 +14,9 @@ func _ready() -> void:
 	# Discard pile goes bottom right
 	$FancyMovementToggle.button_pressed = cfc.game_settings.fancy_movement
 	$OvalHandToggle.button_pressed = cfc.game_settings.hand_use_oval_shape
+	$ScalingFocusOptions.add_item("Scaling Focus", CFInt.FocusStyle.SCALED)
+	$ScalingFocusOptions.add_item("SubViewport Focus", CFInt.FocusStyle.VIEWPORT)
+	$ScalingFocusOptions.add_item("Scaling + SubViewport Focus", CFInt.FocusStyle.BOTH)
 	$ScalingFocusOptions.selected = cfc.game_settings.focus_style
 	$Debug.button_pressed = cfc._debug
 	# Fill up the deck for demo purposes

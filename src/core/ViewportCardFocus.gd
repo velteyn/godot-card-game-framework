@@ -37,8 +37,7 @@ func _ready():
 
 
 func _process(_delta) -> void:
-#	if cfc.game_paused:
-#		print_debug(_current_focus_source)
+	$VBC.layout_mode = 0
 	# This code makes sure that the focus viewport size always matches the size of the card
 	# shown into it. Don't know why but it's a bit buggy still, but only in CFG. Works in Hypnagonia.
 #	if _current_focus_source:
@@ -148,15 +147,19 @@ func focus_card(card: Card, show_preview := true) -> void:
 		$VBC/Focus/SubViewport/Camera2D.position = dupe_focus.global_position
 		# We always make sure to clean tweening conflicts
 		var focus_tween = create_tween()
-		# We do a nice alpha-modulate tween
+		$VBC/Focus.modulate.a = 0.0
 		focus_tween.tween_property($VBC/Focus, 'modulate',
-				Color(1,1,1,1), 0.25).from($VBC/Focus.modulate).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+				Color(1,1,1,1), 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 		if focus_info.visible_details > 0:
-			focus_tween.tween_property(focus_info, 'modulate',
-					Color(1,1,1,1), 0.25).from(focus_info.modulate).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+			var tweener = focus_tween.tween_property(focus_info, 'modulate',
+					Color(1,1,1,1), 0.25)
+			if tweener:
+				tweener.from(focus_info.modulate).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 		else:
-			focus_tween.tween_property(focus_info, 'modulate',
-					Color(1,1,1,0), 0.25).from(focus_info.modulate).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+			var tweener = focus_tween.tween_property(focus_info, 'modulate',
+					Color(1,1,1,0), 0.25)
+			if tweener:
+				tweener.from(focus_info.modulate).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 		card_focus.visible = show_preview
 		# Now that the display panels can expand horizontally
 		# we need to set their parent container size to 0 here
@@ -172,11 +175,14 @@ func unfocus(card: Card) -> void:
 	if _current_focus_source == card:
 		_current_focus_source = null
 		var focus_tween = create_tween()
+		$VBC/Focus.modulate.a = 1.0
 		focus_tween.tween_property($VBC/Focus, 'modulate',
-				Color(1,1,1,0), 0.25).from($VBC/Focus.modulate).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+				Color(1,1,1,0), 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 		if focus_info.modulate != Color(1,1,1,0):
-			focus_tween.tween_property(focus_info, 'modulate',
-					Color(1,1,1,0), 0.25).from(focus_info.modulate).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+			var tweener = focus_tween.tween_property(focus_info, 'modulate',
+					Color(1,1,1,0), 0.25)
+			if tweener:
+				tweener.from(focus_info.modulate).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 
 
 # Tells the currently focused card to stop focusing.
