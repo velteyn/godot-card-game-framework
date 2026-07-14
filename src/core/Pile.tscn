@@ -1,187 +1,136 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene format=3 uid="uid://cessbvxnlytxr"]
 
-[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="FontFile" id=1]
-[ext_resource path="res://src/core/Pile.gd" type="Script" id=2]
-[ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=3]
+[ext_resource type="FontFile" uid="uid://cyvilmejxgi8w" path="res://fonts/Xolonium-Regular.ttf" id="1"]
+[ext_resource type="Script" uid="uid://cnxgnygv581vs" path="res://src/core/Pile.gd" id="2"]
+[ext_resource type="PackedScene" path="res://src/core/Highlight.tscn" id="3"]
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 1, 1, 1, 1 )
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(1, 1, 1, 1)
 corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
-[sub_resource type="FontFile" id=2]
-size = 23
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 1 )
+[sub_resource type="FontFile" id="2"]
+fallbacks = Array[Font]([ExtResource("1"), ExtResource("1")])
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
+cache/0/variation_coordinates = {}
+cache/0/face_index = 0
+cache/0/embolden = 0.0
+cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
+cache/0/spacing_top = 0
+cache/0/spacing_bottom = 0
+cache/0/spacing_space = 0
+cache/0/spacing_glyph = 0
+cache/0/baseline_offset = 0.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
 
-[sub_resource type="StyleBoxFlat" id=3]
-bg_color = Color( 0.392157, 0.364706, 0.364706, 1 )
+[sub_resource type="StyleBoxFlat" id="3"]
+bg_color = Color(0.392157, 0.364706, 0.364706, 1)
 corner_radius_top_left = 15
 corner_radius_top_right = 15
 corner_radius_bottom_right = 15
 corner_radius_bottom_left = 15
 
-[sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 78, 123 )
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(156, 246)
 
-[node name="Pile" type="Area2D" groups=["piles"]]
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_group_": true
-}
+[node name="Pile" type="Area2D" unique_id=1593416678 groups=["piles"]]
+script = ExtResource("2")
 
-[node name="Control" type="Panel" parent="."]
-self_modulate = Color( 1, 1, 1, 0.5 )
+[node name="Control" type="Panel" parent="." unique_id=434709107]
+self_modulate = Color(1, 1, 1, 0.5)
 mouse_filter = 1
-theme_override_styles/panel = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme_override_styles/panel = SubResource("1")
 
-[node name="Highlight" parent="Control" instance=ExtResource( 3 )]
+[node name="Highlight" parent="Control" unique_id=283848266 instance=ExtResource("3")]
+layout_mode = 0
 
-[node name="CenterContainer" type="CenterContainer" parent="Control"]
+[node name="CenterContainer" type="CenterContainer" parent="Control" unique_id=524606836]
+layout_mode = 0
 anchor_right = 1.0
 offset_bottom = 158.0
 mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer"]
-offset_top = 48.0
-offset_right = 62.0
-offset_bottom = 110.0
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer" unique_id=575476878]
+layout_mode = 2
 mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="Label" type="Label" parent="Control/CenterContainer/VBoxContainer"]
-offset_right = 62.0
-offset_bottom = 29.0
-theme_override_fonts/font = SubResource( 2 )
+[node name="Label" type="Label" parent="Control/CenterContainer/VBoxContainer" unique_id=112919636]
+layout_mode = 2
+theme_override_fonts/font = SubResource("2")
 text = "Deck"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="PanelContainer" type="PanelContainer" parent="Control/CenterContainer/VBoxContainer"]
-offset_top = 33.0
-offset_right = 62.0
-offset_bottom = 62.0
-mouse_filter = 2
+[node name="PanelContainer" type="PanelContainer" parent="Control/CenterContainer/VBoxContainer" unique_id=1696926303]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource( 3 )
-
-[node name="CenterContainer" type="CenterContainer" parent="Control/CenterContainer/VBoxContainer/PanelContainer"]
-offset_right = 62.0
-offset_bottom = 29.0
 mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme_override_styles/panel = SubResource("3")
 
-[node name="CardCount" type="Label" parent="Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer"]
-offset_left = 23.0
-offset_right = 39.0
-offset_bottom = 29.0
-theme_override_fonts/font = SubResource( 2 )
+[node name="CenterContainer" type="CenterContainer" parent="Control/CenterContainer/VBoxContainer/PanelContainer" unique_id=801082805]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CardCount" type="Label" parent="Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" unique_id=897333062]
+layout_mode = 2
+theme_override_fonts/font = SubResource("2")
 text = "0"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
+[node name="ManipulationButtons" type="VBoxContainer" parent="Control" unique_id=477709660]
+layout_mode = 0
 offset_left = 2.0
 offset_top = 20.0
 offset_right = 20.0
 offset_bottom = 44.0
 mouse_filter = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="View" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
-offset_right = 27.0
-offset_bottom = 20.0
+[node name="View" type="Button" parent="Control/ManipulationButtons" unique_id=1841946050 groups=["manipulation_button"]]
+layout_mode = 2
 mouse_filter = 1
 text = "V"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="ViewSorted" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
-offset_top = 24.0
-offset_right = 27.0
-offset_bottom = 44.0
+[node name="ViewSorted" type="Button" parent="Control/ManipulationButtons" unique_id=1843904066 groups=["manipulation_button"]]
+layout_mode = 2
 mouse_filter = 1
 text = "VS"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="Shuffle" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
-offset_top = 48.0
-offset_right = 27.0
-offset_bottom = 68.0
+[node name="Shuffle" type="Button" parent="Control/ManipulationButtons" unique_id=2004923034 groups=["manipulation_button"]]
+layout_mode = 2
 mouse_filter = 1
 text = "S"
 expand_icon = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=644463820]
+position = Vector2(78, 123)
+shape = SubResource("4")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 78, 123 )
-shape = SubResource( 4 )
+[node name="ViewPopup" type="PopupPanel" parent="." unique_id=1485982399]
 
-[node name="ViewPopup" type="PopupPanel" parent="."]
-offset_right = 8.0
-offset_bottom = 8.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="CardView" type="GridContainer" parent="ViewPopup"]
+[node name="CardView" type="GridContainer" parent="ViewPopup" unique_id=1292218143]
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 4.0
-offset_bottom = 4.0
+offset_right = 96.0
+offset_bottom = 96.0
 columns = 7
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-
-
-[node name="Debug" type="VBoxContainer" parent="."]
+[node name="Debug" type="VBoxContainer" parent="." unique_id=1535385907]
 offset_left = 15.977
 offset_top = -84.0894
 offset_right = 55.977
 offset_bottom = -34.0894
-__meta__ = {
-"_edit_group_": true,
-"_edit_use_anchors_": false
-}
 
-[node name="Position" type="Label" parent="Debug"]
-offset_right = 40.0
-offset_bottom = 14.0
+[node name="Position" type="Label" parent="Debug" unique_id=1399871629]
+layout_mode = 2
 
-[node name="AreaPos" type="Label" parent="Debug"]
-offset_top = 18.0
-offset_right = 40.0
-offset_bottom = 32.0
+[node name="AreaPos" type="Label" parent="Debug" unique_id=20540827]
+layout_mode = 2
 
-[node name="Size" type="Label" parent="Debug"]
-offset_top = 36.0
-offset_right = 40.0
-offset_bottom = 50.0
-
+[node name="Size" type="Label" parent="Debug" unique_id=143835922]
+layout_mode = 2

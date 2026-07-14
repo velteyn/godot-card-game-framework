@@ -1,14 +1,13 @@
 [gd_scene format=3 uid="uid://devyposphiffs"]
 
 [ext_resource type="Script" uid="uid://bttjwcq3rj7qq" path="res://src/custom/CGFDiscard.gd" id="1"]
-[ext_resource type="PackedScene" path="res://src/core/Pile.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cessbvxnlytxr" path="res://src/core/Pile.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://src/custom/CGFHand.tscn" id="3"]
 [ext_resource type="Script" uid="uid://cip2ymd75carq" path="res://src/custom/CGFDeck.gd" id="4"]
 [ext_resource type="Script" uid="uid://bgibhour38l6o" path="res://src/custom/CGFBoard.gd" id="5"]
 [ext_resource type="PackedScene" path="res://src/custom/CGFCounters.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://src/custom/CGFPlacementGridDemo.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://src/custom/CGFModifiedLabelGrid.tscn" id="8"]
-[ext_resource type="FontFile" uid="uid://cthdfc5b2061c" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="9"]
 [ext_resource type="PackedScene" path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" id="10"]
 [ext_resource type="Theme" path="res://themes/darktheme/darktheme.tres" id="12"]
 [ext_resource type="PackedScene" path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.tscn" id="12_51wqc"]
@@ -20,23 +19,6 @@ corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
-
-[sub_resource type="FontFile" id="2"]
-fallbacks = Array[Font]([ExtResource("9")])
-cache/0/variation_coordinates = {}
-cache/0/face_index = 0
-cache/0/embolden = 0.0
-cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
-cache/0/spacing_top = 0
-cache/0/spacing_bottom = 0
-cache/0/spacing_space = 0
-cache/0/spacing_glyph = 0
-cache/0/baseline_offset = 0.0
-cache/0/16/0/ascent = 0.0
-cache/0/16/0/descent = 0.0
-cache/0/16/0/underline_position = 0.0
-cache/0/16/0/underline_thickness = 0.0
-cache/0/16/0/scale = 1.0
 
 [sub_resource type="StyleBoxFlat" id="3"]
 bg_color = Color(0.145098, 0.145098, 0.145098, 1)
@@ -60,57 +42,27 @@ script = ExtResource("4")
 pile_name = "Deck"
 placement = 8
 
-[node name="Highlight" parent="Deck/Control" index="0"]
-layout_mode = 0
+[node name="Highlight" parent="Deck/Control" parent_id_path=PackedInt32Array(2121525092, 434709107) index="0" unique_id=283848266]
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 
-[node name="CenterContainer" parent="Deck/Control" index="1"]
-layout_mode = 0
+[node name="CenterContainer" parent="Deck/Control" parent_id_path=PackedInt32Array(2121525092, 434709107) index="1" unique_id=524606836]
+anchor_right = 0.0
 offset_right = 43.0
+offset_bottom = 161.0
 
-[node name="VBoxContainer" parent="Deck/Control/CenterContainer" index="0"]
-layout_mode = 2
-
-[node name="Label" parent="Deck/Control/CenterContainer/VBoxContainer" index="0"]
-layout_mode = 2
-
-[node name="PanelContainer" parent="Deck/Control/CenterContainer/VBoxContainer" index="1"]
-layout_mode = 2
-
-[node name="CenterContainer" parent="Deck/Control/CenterContainer/VBoxContainer/PanelContainer" index="0"]
-layout_mode = 2
-
-[node name="CardCount" parent="Deck/Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" index="0"]
-layout_mode = 2
-
-[node name="ManipulationButtons" parent="Deck/Control" index="2"]
-layout_mode = 0
+[node name="ManipulationButtons" parent="Deck/Control" parent_id_path=PackedInt32Array(2121525092, 434709107) index="2" unique_id=477709660]
+offset_left = 0.0
+offset_top = 0.0
 offset_right = 29.0
 offset_bottom = 121.0
 
-[node name="View" parent="Deck/Control/ManipulationButtons" index="0"]
-layout_mode = 2
-
-[node name="ViewSorted" parent="Deck/Control/ManipulationButtons" index="1"]
-layout_mode = 2
-
-[node name="Shuffle" parent="Deck/Control/ManipulationButtons" index="2"]
-layout_mode = 2
-
-[node name="CollisionShape2D" parent="Deck" index="1"]
-position = Vector2(92, 165)
-
-[node name="CardView" parent="Deck/ViewPopup" index="1"]
-offset_right = 96.0
-offset_bottom = 96.0
-
-[node name="Position" parent="Deck/Debug" index="0"]
-layout_mode = 2
-
-[node name="AreaPos" parent="Deck/Debug" index="1"]
-layout_mode = 2
-
-[node name="Size" parent="Deck/Debug" index="2"]
-layout_mode = 2
+[node name="CollisionShape2D" parent="Deck" index="1" unique_id=644463820]
+position = Vector2(84, 116)
 
 [node name="Discard" parent="." unique_id=1809617181 instance=ExtResource("2")]
 position = Vector2(1124, 475)
@@ -118,60 +70,31 @@ script = ExtResource("1")
 faceup_cards = true
 placement = 6
 
-[node name="Control" parent="Discard" index="0"]
+[node name="Control" parent="Discard" index="0" unique_id=434709107]
 theme_override_styles/panel = SubResource("1")
 
-[node name="Highlight" parent="Discard/Control" index="0"]
-layout_mode = 0
+[node name="Highlight" parent="Discard/Control" index="0" unique_id=283848266]
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 
-[node name="CenterContainer" parent="Discard/Control" index="1"]
-layout_mode = 0
+[node name="CenterContainer" parent="Discard/Control" index="1" unique_id=524606836]
+anchor_right = 0.0
 
-[node name="VBoxContainer" parent="Discard/Control/CenterContainer" index="0"]
-layout_mode = 2
+[node name="ManipulationButtons" parent="Discard/Control" index="2" unique_id=477709660]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 18.0
+offset_bottom = 24.0
 
-[node name="Label" parent="Discard/Control/CenterContainer/VBoxContainer" index="0"]
-layout_mode = 2
-
-[node name="PanelContainer" parent="Discard/Control/CenterContainer/VBoxContainer" index="1"]
-layout_mode = 2
-
-[node name="CenterContainer" parent="Discard/Control/CenterContainer/VBoxContainer/PanelContainer" index="0"]
-layout_mode = 2
-
-[node name="CardCount" parent="Discard/Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" index="0"]
-layout_mode = 2
-
-[node name="ManipulationButtons" parent="Discard/Control" index="2"]
-layout_mode = 0
-
-[node name="View" parent="Discard/Control/ManipulationButtons" index="0"]
-layout_mode = 2
-
-[node name="ViewSorted" parent="Discard/Control/ManipulationButtons" index="1"]
-layout_mode = 2
-
-[node name="Shuffle" parent="Discard/Control/ManipulationButtons" index="2"]
-layout_mode = 2
-
-[node name="CollisionShape2D" parent="Discard" index="1"]
-position = Vector2(74, 131)
-
-[node name="CardView" parent="Discard/ViewPopup" index="1"]
-offset_right = 96.0
-offset_bottom = 96.0
-
-[node name="Position" parent="Discard/Debug" index="0"]
-layout_mode = 2
-
-[node name="AreaPos" parent="Discard/Debug" index="1"]
-layout_mode = 2
-
-[node name="Size" parent="Discard/Debug" index="2"]
-layout_mode = 2
+[node name="CollisionShape2D" parent="Discard" index="1" unique_id=644463820]
+position = Vector2(63, 112)
 
 [node name="Hand" parent="." unique_id=1496932974 instance=ExtResource("3")]
-position = Vector2(177, 521)
+position = Vector2(129, 240)
 show_manipulation_buttons = false
 
 [node name="Counters" parent="." unique_id=1980195211 instance=ExtResource("6")]
@@ -250,10 +173,10 @@ text = "Debug"
 
 [node name="PlacementGridDemo" parent="." unique_id=296217866 instance=ExtResource("7")]
 layout_mode = 0
-offset_left = 775.0
-offset_top = 240.0
-offset_right = 1274.0
-offset_bottom = 436.0
+offset_left = 382.0
+offset_top = 514.0
+offset_right = 881.0
+offset_bottom = 710.0
 highlight = Color(0.985156, 0, 1.3, 1.3)
 
 [node name="ModifiedLabelGrid" parent="." unique_id=665772384 instance=ExtResource("8")]
@@ -263,23 +186,14 @@ offset_top = 30.0
 offset_right = 1264.0
 offset_bottom = 226.0
 
-[node name="SeedLabel" type="Label" parent="." unique_id=787425856]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 175.0
-offset_right = 265.0
-offset_bottom = 200.0
-theme_override_fonts/font = SubResource("2")
-text = "Game Seed is: "
-
 [node name="DeckBuilderPopup" type="PopupPanel" parent="." unique_id=812886699]
 
 [node name="DeckBuilder" parent="DeckBuilderPopup" unique_id=1649893736 instance=ExtResource("10")]
 anchors_preset = 15
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 628.0
-offset_bottom = 153.0
+offset_right = -34.0
+offset_bottom = -359.0
 theme_override_styles/panel = SubResource("3")
 random_adverb_miss = 10
 random_adjective_miss = 1.1

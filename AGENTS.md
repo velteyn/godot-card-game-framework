@@ -4,7 +4,7 @@
 
 1. **Keep CONTEXT.md and doc/ updated** — Whenever you discover new information about the project architecture, APIs, or migration challenges, update the relevant documents in `doc/architecture/`, `doc/migration-plan/`, or `doc/reference/`. Keep CONTEXT.md as the authoritative single-source-of-truth overview.
 
-2. **Commit & push after every task/subtask** — After completing any task or meaningful subtask:
+2. **Commit & push after every task/subtask** — After completing any task or meaningful subtask and after confirmed completed/solved by user:
    ```bash
    git add -A
    git commit -m "descriptive message about what was done"

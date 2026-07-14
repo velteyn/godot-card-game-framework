@@ -1,31 +1,53 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene format=3 uid="uid://hnskgyy4sduo"]
 
-[ext_resource path="res://themes/darktheme/darktheme.tres" type="Theme" id=1]
-[ext_resource path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" type="FontFile" id=2]
-[ext_resource path="res://src/custom/MainMenu.gd" type="Script" id=3]
-[ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=4]
-[ext_resource path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.tscn" type="PackedScene" id=5]
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.tscn" type="PackedScene" id=6]
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.tscn" type="PackedScene" id=7]
+[ext_resource type="Theme" path="res://themes/darktheme/darktheme.tres" id="1"]
+[ext_resource type="FontFile" uid="uid://syb53br50mc0" path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" id="2"]
+[ext_resource type="Script" uid="uid://cynaera0rdjgt" path="res://src/custom/MainMenu.gd" id="3"]
+[ext_resource type="PackedScene" path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.tscn" id="7"]
+[ext_resource type="FontFile" uid="uid://gc1f0d0v1tyu" path="res://fonts/comfortaa/Comfortaa-Light.ttf" id="8_dx45r"]
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0.145098, 0.145098, 0.145098, 1)
 
-[sub_resource type="FontFile" id=2]
-size = 107
-font_data = ExtResource( 2 )
+[sub_resource type="FontFile" id="2"]
+fallbacks = Array[Font]([ExtResource("2")])
+cache/0/variation_coordinates = {}
+cache/0/face_index = 0
+cache/0/embolden = 0.0
+cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
+cache/0/spacing_top = 0
+cache/0/spacing_bottom = 0
+cache/0/spacing_space = 0
+cache/0/spacing_glyph = 0
+cache/0/baseline_offset = 0.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/29/0/ascent = 0.0
+cache/0/29/0/descent = 0.0
+cache/0/29/0/underline_position = 0.0
+cache/0/29/0/underline_thickness = 0.0
+cache/0/29/0/scale = 1.0
 
-[node name="Menu" type="Panel"]
+[sub_resource type="LabelSettings" id="LabelSettings_n4y2n"]
+font = ExtResource("8_dx45r")
+font_size = 38
+font_color = Color(1, 0.34901962, 0.32941177, 1)
+
+[node name="Menu" type="Panel" unique_id=1102977283]
 offset_right = 1280.0
 offset_bottom = 720.0
-theme = ExtResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme = ExtResource("1")
+script = ExtResource("3")
 
-[node name="DeckBuilder" parent="." instance=ExtResource( 4 )]
-theme_override_styles/panel = SubResource( 1 )
+[node name="DeckBuilder" parent="." unique_id=1349648373 instance=ExtResource("4")]
+layout_mode = 0
+theme_override_styles/panel = SubResource("1")
 random_adverb_miss = 10
 random_adjective_miss = 1.1
 random_append_miss = 2
@@ -33,98 +55,73 @@ second_noun_miss = 3
 max_quantity = 3
 deck_minimum = 52
 deck_maximum = 60
-deck_card_object_scene = ExtResource( 6 )
-deck_summary_scene = ExtResource( 7 )
+deck_card_object_scene = ExtResource("6")
+deck_summary_scene = ExtResource("7")
 
-[node name="CardLibrary" parent="." instance=ExtResource( 5 )]
-theme_override_styles/panel = SubResource( 1 )
+[node name="CardLibrary" parent="." unique_id=792177334 instance=ExtResource("5")]
+layout_mode = 0
+theme_override_styles/panel = SubResource("1")
 icon_size = 15
 property_width_exceptions = {
 "Cost": 30,
 "Power": 50
 }
 
-[node name="MainMenu" type="MarginContainer" parent="."]
+[node name="MainMenu" type="MarginContainer" parent="." unique_id=572792058]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="ColorRect" type="ColorRect" parent="MainMenu"]
-offset_right = 1280.0
-offset_bottom = 720.0
-color = Color( 0.0705882, 0.0705882, 0.0705882, 1 )
+[node name="ColorRect" type="ColorRect" parent="MainMenu" unique_id=512034047]
+layout_mode = 2
+color = Color(0.0705882, 0.0705882, 0.0705882, 1)
 
-[node name="VBox" type="VBoxContainer" parent="MainMenu"]
-offset_right = 1280.0
-offset_bottom = 720.0
+[node name="VBox" type="VBoxContainer" parent="MainMenu" unique_id=819545505]
+layout_mode = 2
 
-[node name="Margin" type="MarginContainer" parent="MainMenu/VBox"]
-offset_right = 1280.0
-offset_bottom = 358.0
+[node name="Margin" type="MarginContainer" parent="MainMenu/VBox" unique_id=227041498]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_top = 90
 
-[node name="Label" type="Label" parent="MainMenu/VBox/Margin"]
-offset_top = 108.0
-offset_right = 1280.0
-offset_bottom = 340.0
-theme_override_fonts/font = SubResource( 2 )
-text = "Godot 
-Card Game Framework"
-align = 1
+[node name="Label" type="Label" parent="MainMenu/VBox/Margin" unique_id=688767009]
+layout_mode = 2
+theme_override_fonts/font = SubResource("2")
+text = "Godot 4.x
+Card Game Framework "
+label_settings = SubResource("LabelSettings_n4y2n")
+horizontal_alignment = 1
 
-[node name="Center" type="CenterContainer" parent="MainMenu/VBox"]
-offset_top = 361.0
-offset_right = 1280.0
-offset_bottom = 720.0
+[node name="Center" type="CenterContainer" parent="MainMenu/VBox" unique_id=1368860436]
+layout_mode = 2
 size_flags_vertical = 3
 
-[node name="VButtons" type="VBoxContainer" parent="MainMenu/VBox/Center"]
-offset_left = 544.0
-offset_top = 73.0
-offset_right = 736.0
-offset_bottom = 285.0
-custom_minimum_size = Vector2( 192, 0 )
+[node name="VButtons" type="VBoxContainer" parent="MainMenu/VBox/Center" unique_id=463989165]
+custom_minimum_size = Vector2(192, 0)
+layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="SinglePlayerDemo" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-offset_right = 192.0
-offset_bottom = 27.0
+[node name="SinglePlayerDemo" type="Button" parent="MainMenu/VBox/Center/VButtons" unique_id=1247352390]
+layout_mode = 2
 text = "Single Player Demo"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="Multiplayer" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-offset_top = 37.0
-offset_right = 192.0
-offset_bottom = 64.0
+[node name="Multiplayer" type="Button" parent="MainMenu/VBox/Center/VButtons" unique_id=1214477369]
+layout_mode = 2
 text = "Multiplayer Demo"
 
-[node name="Deckbuilder" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-offset_top = 74.0
-offset_right = 192.0
-offset_bottom = 101.0
+[node name="Deckbuilder" type="Button" parent="MainMenu/VBox/Center/VButtons" unique_id=1578284058]
+layout_mode = 2
 text = "Deck Builder"
 
-[node name="CardLibrary" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-offset_top = 111.0
-offset_right = 192.0
-offset_bottom = 138.0
+[node name="CardLibrary" type="Button" parent="MainMenu/VBox/Center/VButtons" unique_id=1914339726]
+layout_mode = 2
 text = "Card Library"
 
-[node name="GUT" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-offset_top = 148.0
-offset_right = 192.0
-offset_bottom = 175.0
+[node name="GUT" type="Button" parent="MainMenu/VBox/Center/VButtons" unique_id=1499874351]
+layout_mode = 2
 text = "Tests"
 
-[node name="Exit" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-offset_top = 185.0
-offset_right = 192.0
-offset_bottom = 212.0
+[node name="Exit" type="Button" parent="MainMenu/VBox/Center/VButtons" unique_id=1054548789]
+layout_mode = 2
 text = "Exit"
-

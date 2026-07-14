@@ -18,7 +18,6 @@ func _ready() -> void:
 	# Fill up the deck for demo purposes
 	if not cfc.ut:
 		cfc.game_rng_seed = CFUtils.generate_random_seed()
-		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
 	if not cfc.is_testing:
 		load_test_cards(false)
 	# warning-ignore:return_value_discarded
