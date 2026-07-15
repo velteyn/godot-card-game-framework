@@ -144,7 +144,11 @@ func focus_card(card: Card, show_preview := true) -> void:
 		# We have to copy these internal vars because they are reset
 		# see https://github.com/godotengine/godot/issues/3393
 		# We make the viewport camera focus on it
-		$VBC/Focus/SubViewport/Camera2D.position = dupe_focus.global_position
+		# Offset camera so the card is centered in the focus viewport
+		var viewport_size = _focus_viewport.size
+		var zoom = $VBC/Focus/SubViewport/Camera2D.zoom
+		$VBC/Focus/SubViewport/Camera2D.position = dupe_focus.global_position \
+				- viewport_size * 0.5 / zoom
 		# We always make sure to clean tweening conflicts
 		var focus_tween = create_tween()
 		$VBC/Focus.modulate.a = 0.0
