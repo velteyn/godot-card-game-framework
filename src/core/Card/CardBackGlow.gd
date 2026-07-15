@@ -33,9 +33,12 @@ func start_card_back_animation():
 	if _tween and _tween.is_valid():
 		_tween.kill()
 	_tween = create_tween()
-	_tween.tween_property(self, 'modulate',
-			_pulse_values[1], 2.0).from(_pulse_values[0]).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
-	_tween.finished.connect(_on_Pulse_completed)
+	var tweener = _tween.tween_property(self, 'modulate',
+			_pulse_values[1], 2.0)
+	if tweener:
+		tweener.from(_pulse_values[0]).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+	_tween.finished.disconnect(_on_Pulse_completed)
+	_tween.finished.connect(_on_Pulse_completed, CONNECT_ONE_SHOT)
 
 
 # Disables the looping card back pulse
