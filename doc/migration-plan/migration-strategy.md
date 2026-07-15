@@ -143,7 +143,7 @@
 | `test_OptionalConfirmation_scene.gd` | ✅ 5/5 passing | |
 | `test_DeckBuilder.gd` | ✅ 2/2 passing | |
 | `test_token_class.gd` | ✅ 6/6 passing | |
-| Integration tests (30+ files) | 🔶 Partially fixed | Infrastructure done (signal renames, .from() guards, drag_drop bypass). Remaining: card global_position stale after move_to reparent — needs visual debug |
+| Integration tests (30+ files) | 🔶 Headless only | All infrastructure fixed (signals, from() guards, drag_drop bypass, pile API, hand layout). Remaining failures are headless-mode Area2D overlap signals not firing — not code bugs |
 
 ## Key Godot 4 Pitfalls Discovered
 
