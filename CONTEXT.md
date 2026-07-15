@@ -276,6 +276,14 @@ themes/                 ← Dark theme
 
 38. **`event.doubleclick` renamed to `double_click`**: In Godot 4, `InputEventMouseButton.doubleclick` was renamed to `double_click` (with underscore). Line 487 of `CardTemplate.gd` accessed the old property name, causing `Invalid access to property or key 'doubleclick'` error. Fix: `event.double_click`.
 
+39. **Hand card layout broken — Control size zero**: Cards in the hand appeared collapsed at `(-75, 0)` instead of forming the oval arch. Root cause: `CGFBoard._ready()` never called `super()`, so `Board._ready()` never ran the `container.re_place()` loop. Without `re_place()`, the hand's Control had size `(0,0)`, collapsing all oval position formulas. Also, headless viewport is `(64,64)` vs design `(1280,720)`. Fixes: added `super()` to `CGFBoard._ready()`, `layout_mode=0` before size assignments, `DESIGN_RESOLUTION` fallback when viewport < 100px.
+
+40. **Card focus/preview panel not appearing**: The magnified card preview (ViewportCardFocus) was invisible. Fixes: (a) Removed `Main.self_modulate = Color(1,1,1,0)` which cascaded to VBC/Focus children making them transparent; (b) Guarded `.from()` calls on `focus_card()`/`unfocus()` tweens; (c) Added `$VBC.layout_mode = 0` for direct position assignments.
+
+41. **OptionButton dropdown empty**: `ScalingFocusOptions` in CGFBoard.tscn lost items during 3→4 conversion. Fix: added via `add_item()` in code.
+
+42. **Card glow/bloom not visible**: HDR glow effect (bright highlight borders blooming via WorldEnvironment) was broken. `MainWorld.tres` was in Godot 3 format=2 with old property names (`glow_hdr_threshold`→`glow_hdr_bleed_threshold`, `glow_hdr_luminance_cap`→`glow_hdr_bleed_scale`, `glow_bicubic_upscale`→`glow_upscale_mode`). File saved in Godot 4 format=3 with correct names. Also fixed `CardBackGlow.gd`: guarded `.from()` and use `CONNECT_ONE_SHOT` for `.finished` connection.
+
 ## Key Conversion Challenges
 
 1. **`yield` everywhere** — The codebase relies heavily on `yield` for animation sequencing, async card movement, and test coordination. Every occurrence must be converted to `await`.
